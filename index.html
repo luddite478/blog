@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .post {
+            margin-bottom: 40px;
+        }
+
+        .post-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .audio-player {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="post">
+            <div class="post-title">First Blog Post</div>
+            <div class="post-content">
+                <p>One two three</p>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="greenradio.mp3" type="audio/mpeg">    
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-title">Second Blog Post</div>
+            <div class="post-content">
+                <p>This is the content of the second blog post. You can write about a different topic and include another audio player below.</p>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="greenradio.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+           
