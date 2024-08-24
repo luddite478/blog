@@ -1,0 +1,32 @@
+version: '3'
+services:
+  haproxy:
+    build: 
+      context: haproxy
+      dockerfile: Dockerfile.haproxy
+    volumes:
+      - ./haproxy:/usr/local/etc/haproxy
+    ports:
+      - 0.0.0.0:30100:9001
+      - 0.0.0.0:8080:80
+    env_file:
+      - .dev.env
+  minio:
+    image: minio/minio
+    env_file:
+      - .dev.env
+    volumes:
+      - ./minio/data:/data
+    command: server /data --console-address ":9001"
+  blog:
+    image: blog-blog:latest
+    env_file:
+      - .dev.env
+    depends_on:
+      - minio
+    working_dir: /app
+    volumes:
+      - ./blog:/app
+    command: python3 server.py
+  debug:
+    image: debug:latest

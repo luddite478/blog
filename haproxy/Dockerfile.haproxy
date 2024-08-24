@@ -1,0 +1,12 @@
+FROM haproxy:2.3
+
+RUN apt-get update && apt-get install -y gettext-base && rm -rf /var/lib/apt/lists/*
+
+COPY haproxy.cfg.template /usr/local/etc/haproxy/haproxy.cfg.template
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]

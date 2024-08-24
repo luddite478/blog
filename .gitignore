@@ -1,2 +1,6 @@
 *.mp3
-.env
+.dev.env
+**/*.env
+minio
+haproxy/haproxy.cfg
+uploader/.env

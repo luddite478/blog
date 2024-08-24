@@ -1,0 +1,24 @@
+global
+    log stdout format raw local0
+
+defaults
+    mode http
+    log global
+    option httplog
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend minio
+    bind *:9001
+    default_backend minio
+
+backend minio
+    server minio minio:9001
+
+frontend blog
+    bind *:${BLOG_CONTAINER_PORT}
+    default_backend blog
+
+backend blog
+    server blog blog:${BLOG_CONTAINER_PORT}

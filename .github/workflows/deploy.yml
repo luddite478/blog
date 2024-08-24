@@ -1,0 +1,26 @@
+name: Redeploy Docker Compose
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+
+    - name: Stop and redeploy with Docker Compose
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
+          cd /path/to/your/docker-compose/folder  # Change to your directory
+          docker-compose down
+          docker-compose up --build --force-recreate -d
+        EOF
