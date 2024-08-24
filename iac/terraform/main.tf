@@ -1,5 +1,8 @@
 locals {
-  env_vars = { for tuple in regexall("(.*?)=(.*)", file("../.env")) : tuple[0] => tuple[1] }
+  env_vars = {
+    for tuple in regexall("(.*?)=(.*)", file("../.env")) :
+    tuple[0] => replace(replace(tuple[1], "/\"/", ""), "/\\r$/", "")
+  }
 }
 
 terraform {
@@ -11,45 +14,51 @@ terraform {
   }
 }
 
+resource "digitalocean_floating_ip" "blog_ip" {
+  droplet_id = digitalocean_droplet.blog.id
+  region = digitalocean_droplet.blog.region
+}
+
+output "floating_ip" {
+  value = digitalocean_floating_ip.blog_ip.ip_address
+}
+
 provider "digitalocean" {
   token = local.env_vars["DIGITALOCEAN_TOKEN"]
 }
 
-resource "digitalocean_ssh_key" "default" {
+resource "digitalocean_ssh_key" "key1" {
   name       = "deployment_key"
   public_key = file(local.env_vars["SSH_PUBLIC_KEY_PATH"])
 }
 
-resource "digitalocean_droplet" "web" {
-  image  = "docker-20-04"
-  name   = "web-droplet"
-  region = "nyc3"
+provider "random" {}
+
+resource "random_id" "server_suffix" {
+  byte_length = 4 
+}
+
+resource "digitalocean_droplet" "blog" {
+  image  = "ubuntu-20-04-x64"
+  name   = "blog-${random_id.server_suffix.hex}"
+  region = "ams3"
   size   = "s-1vcpu-1gb"
   ssh_keys = [
-    digitalocean_ssh_key.default.id,
+    digitalocean_ssh_key.key1.id,
   ]
 
   connection {
     type        = "ssh"
-    user        = file(local.env_vars["SSH_USER"])
+    user        = local.env_vars["SSH_USER"]
     private_key = file(local.env_vars["SSH_PRIVATE_KEY_PATH"])
     host        = self.ipv4_address
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y git docker docker-compose",
-      "git clone https://your-repository-url.git /app",
-      "cd /app && sudo docker-compose up -d"
-    ]
-  }
+  user_data = templatefile("${path.module}/user_data.tpl", {
+    env_content = file("${path.module}/../../.env")
+  })
 }
 
 output "ip" {
-  value = digitalocean_droplet.web.ipv4_address
+  value = digitalocean_droplet.blog.ipv4_address
 }
-
-variable "do_token" {}
-variable "ssh_public_key_path" {}
-variable "git_repo_url" {}

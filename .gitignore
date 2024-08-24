@@ -1,6 +1,8 @@
 *.mp3
 .dev.env
 iac/terraform/.terraform/
+iac/terraform/terraform.tfstate
+iac/terraform/terraform.tfstate.backup
 **/*.env
 minio
 haproxy/haproxy.cfg

@@ -1,9 +1,8 @@
-name: Redeploy Docker Compose
-
+name: Deploy new version
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   redeploy:
@@ -15,12 +14,14 @@ jobs:
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
+        ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
 
-    - name: Stop and redeploy with Docker Compose
+    - name: Stop and rerun Docker Compose
+      env:
+        DOCKER_COMPOSE_PATH: /home/luddite478/blog
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
-          cd /path/to/your/docker-compose/folder  # Change to your directory
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << 'EOF'
+          cd $DOCKER_COMPOSE_PATH
           docker-compose down
           docker-compose up --build --force-recreate -d
         EOF
