@@ -1,5 +1,6 @@
 *.mp3
 .dev.env
+**/*.terraform
 **/*.env
 minio
 haproxy/haproxy.cfg
