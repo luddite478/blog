@@ -20,7 +20,7 @@ jobs:
       env:
         DOCKER_COMPOSE_PATH: /home/luddite478/blog
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
           echo 111111111111111111111111111111111111111111111
           echo $DOCKER_COMPOSE_PATH
           pwd
@@ -35,7 +35,7 @@ jobs:
         echo 111111111111111111111111111111111111111111111
         echo $DOCKER_COMPOSE_PATH
         pwd
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
           cd $DOCKER_COMPOSE_PATH
           docker-compose down
           docker-compose up --build --force-recreate -d
