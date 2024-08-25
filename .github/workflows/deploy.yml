@@ -22,20 +22,30 @@ jobs:
     - name: Sync latest changes
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
-          echo 111111111111111111111111111111111111111111111
-          echo "${{ env.REPO_DIR_PATH}}"
-          pwd
           cd "${{ env.REPO_DIR_PATH}}"
+          git config --global --add safe.directory ${{ env.REPO_DIR_PATH}}
           git pull origin master
         EOF
 
     - name: Stop and rerun Docker Compose
       run: |
-        echo 111111111111111111111111111111111111111111111
-        echo "${{ env.REPO_DIR_PATH}}"
-        pwd
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
           cd "${{ env.REPO_DIR_PATH}}"
           docker-compose down
           docker-compose up --build --force-recreate -d
         EOF
+
+    - name: Wait for site to be ready
+      timeout-minutes: 3
+      run: |
+        echo "Waiting for site to be ready..."
+        timeout=180 # 3 minutes
+        while ! curl -s http://${{ secrets.HOST_IP }} > /dev/null; do
+          sleep 10
+          timeout=$((timeout-10))
+          if [ "$timeout" -le 0 ]; then
+            echo "Timed out waiting for site to respond."
+            exit 1
+          fi
+        done
+        echo "Site is up and responding."
