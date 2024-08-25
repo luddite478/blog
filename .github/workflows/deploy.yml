@@ -16,6 +16,18 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
 
+    - name: Sync latest changes
+      env:
+        DOCKER_COMPOSE_PATH: /home/luddite478/blog
+      run: |
+        echo 111111111111111111111111111111111111111111111
+        echo $DOCKER_COMPOSE_PATH
+        pwd
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << 'EOF'
+          cd $DOCKER_COMPOSE_PATH
+          git pull origin master
+        EOF
+
     - name: Stop and rerun Docker Compose
       env:
         DOCKER_COMPOSE_PATH: /home/luddite478/blog
