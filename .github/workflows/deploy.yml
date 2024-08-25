@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'iac/**'
 
 env:
   REPO_DIR_PATH: /home/luddite478/blog
