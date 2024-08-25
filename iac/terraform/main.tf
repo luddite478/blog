@@ -32,30 +32,18 @@ resource "digitalocean_ssh_key" "key1" {
   public_key = file(local.env_vars["SSH_PUBLIC_KEY_PATH"])
 }
 
-provider "random" {}
-
-resource "random_id" "server_suffix" {
-  byte_length = 4 
-}
-
 resource "digitalocean_droplet" "blog" {
   image  = "ubuntu-20-04-x64"
-  name   = "blog-${random_id.server_suffix.hex}"
+  name   = "blog"
   region = "ams3"
   size   = "s-1vcpu-1gb"
   ssh_keys = [
     digitalocean_ssh_key.key1.id,
   ]
 
-  connection {
-    type        = "ssh"
-    user        = local.env_vars["SSH_USER"]
-    private_key = file(local.env_vars["SSH_PRIVATE_KEY_PATH"])
-    host        = self.ipv4_address
-  }
-
   user_data = templatefile("${path.module}/user_data.tpl", {
-    env_content = file("${path.module}/../../.env")
+    APPLICATION_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../.env"),
+    HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"]
   })
 }
 

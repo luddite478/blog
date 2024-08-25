@@ -3,6 +3,9 @@ from flask import Flask, Response, render_template
 from minio import Minio
 from minio.error import S3Error
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -28,9 +31,17 @@ if not minioClient.bucket_exists(bucket_name):
 
 @app.route('/')
 def home():
-    posts = [
-        {'audio_s3_path': 'test', 'date': 'This is the first post.'},
-    ]
+    posts = []
+    for obj in minioClient.list_objects(bucket_name, recursive=True):
+        filename = obj.object_name
+        # Adjusting to handle filename format "[yy-mm-dd-hh-mm-ss].mp3"
+        try:
+            date_time_str = filename.strip("[]").split('.')[0]
+            yy, mm, dd, hh, minute, ss = date_time_str.split('-')
+            date = f"20{yy}-{mm}-{dd} {hh}:{minute}:{ss}"
+            posts.append({'audio_s3_path': filename, 'date': date})
+        except ValueError:
+            logging.error(f"Filename {filename} does not match expected format.")
     return render_template('index.html', posts=posts)
 
 @app.route('/audio/<filename>')

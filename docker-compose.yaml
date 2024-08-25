@@ -5,6 +5,7 @@ services:
       context: haproxy
       dockerfile: Dockerfile.haproxy
     ports:
+      - 30200:9000
       - 30100:9001
       - 80:80
     env_file:
@@ -25,4 +26,4 @@ services:
     env_file:
       - .env
     working_dir: /app
-    command: python3 server.py
+    command: gunicorn -w 4 -b 0.0.0.0:80 server:app
