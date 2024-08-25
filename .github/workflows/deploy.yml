@@ -4,6 +4,9 @@ on:
     branches:
       - master
 
+env:
+  REPO_DIR_PATH: /home/luddite478/blog
+
 jobs:
   redeploy:
     runs-on: ubuntu-latest
@@ -17,26 +20,22 @@ jobs:
         ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
 
     - name: Sync latest changes
-      env:
-        DOCKER_COMPOSE_PATH: /home/luddite478/blog
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
           echo 111111111111111111111111111111111111111111111
-          echo $DOCKER_COMPOSE_PATH
+          echo "${{ env.REPO_DIR_PATH}}"
           pwd
-          cd $DOCKER_COMPOSE_PATH
+          cd "${{ env.REPO_DIR_PATH}}"
           git pull origin master
         EOF
 
     - name: Stop and rerun Docker Compose
-      env:
-        DOCKER_COMPOSE_PATH: /home/luddite478/blog
       run: |
         echo 111111111111111111111111111111111111111111111
-        echo $DOCKER_COMPOSE_PATH
+        echo "${{ env.REPO_DIR_PATH}}"
         pwd
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
-          cd $DOCKER_COMPOSE_PATH
+          cd "${{ env.REPO_DIR_PATH}}"
           docker-compose down
           docker-compose up --build --force-recreate -d
         EOF
