@@ -30,7 +30,6 @@ if not minioClient.bucket_exists(bucket_name):
 def home():
     posts = [
         {'audio_s3_path': 'test', 'date': 'This is the first post.'},
-        {'audio_s3_path': 'test', 'date': 'This is the second post.'},
     ]
     return render_template('index.html', posts=posts)
 
