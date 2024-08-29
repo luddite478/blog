@@ -1,6 +1,6 @@
 locals {
   env_vars = {
-    for tuple in regexall("(.*?)=(.*)", file("../.env")) :
+    for tuple in regexall("(.*?)=(.*)", file("../.infra.env")) :
     tuple[0] => replace(replace(tuple[1], "/\"/", ""), "/\\r$/", "")
   }
 }
@@ -42,8 +42,9 @@ resource "digitalocean_droplet" "blog" {
   ]
 
   user_data = templatefile("${path.module}/user_data.tpl", {
-    APPLICATION_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../.env"),
+    APPLICATION_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../blog/.server.env"),
     HAPROXY_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../haproxy/.haproxy.env"),
+    MINIO_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../minio/.minio.env"),
     HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"]
   })
 }

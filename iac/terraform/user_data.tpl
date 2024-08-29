@@ -33,10 +33,14 @@ git clone https://github.com/luddite478/blog /home/luddite478/blog
 sudo chown -R luddite478:luddite478 /home/luddite478/blog
 
 # Extract application env
-echo "${APPLICATION_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/.env
+echo "${APPLICATION_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/.server.env
+
+# Extract minio env
+echo "${MINIO_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/minio/.minio.env
+
+# Extract haproxy env
 echo "${HAPROXY_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/haproxy/.haproxy.env
 HAPROXY_FULLCHAIN_BASE64=$(grep 'HAPROXY_FULLCHAIN_BASE64' /home/luddite478/blog/haproxy/.haproxy.env | cut -d'=' -f2)
-
 echo "$HAPROXY_FULLCHAIN_BASE64" | base64 --decode > "/home/luddite478/blog/haproxy/fullchain.pem"
 echo "HAPROXY_FULLCHAIN_PATH=/haproxy/fullchain.pem" >> /home/luddite478/blog/haproxy/.haproxy.env
 # Start the application using docker-compose
