@@ -8,7 +8,7 @@ from minio.error import S3Error
 
 # Configuration
 watch_folder = '/path/to/watch/folder'
-minio_bucket = 'your-bucket-name'
+minio_bucket = 'audio'
 minio_client = Minio(
     "play.min.io",
     access_key="your-access-key",
