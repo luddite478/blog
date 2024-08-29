@@ -9,7 +9,7 @@ services:
       - 30100:9001
       - 80:80
     env_file: # quotes around variables are not trimmed
-      - .env
+      - ./haproxy/.haproxy.env
     volumes:
       - ./haproxy:/haproxy
   minio:
