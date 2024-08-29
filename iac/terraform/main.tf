@@ -45,6 +45,7 @@ resource "digitalocean_droplet" "blog" {
     APPLICATION_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../blog/.server.env"),
     HAPROXY_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../haproxy/.haproxy.env"),
     MINIO_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../minio/.minio.env"),
+    MONGODB_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../mongodb/.mongo.env"),
     HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"]
   })
 }

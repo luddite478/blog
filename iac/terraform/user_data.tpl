@@ -38,12 +38,17 @@ echo "${MINIO_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/m
 
 echo "Extracting haproxy env..."
 echo "${HAPROXY_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/haproxy/.haproxy.env
+
+echo "Extracting mongodb env..."
+echo "${MONGODB_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/mongodb/.mongo.env
 # extract fullchain value
 HAPROXY_FULLCHAIN_BASE64=$(grep 'HAPROXY_FULLCHAIN_BASE64' /home/luddite478/blog/haproxy/.haproxy.env | cut -d'=' -f2)
 # save fullchain value to file
 echo "$HAPROXY_FULLCHAIN_BASE64" | base64 --decode > "/home/luddite478/blog/haproxy/fullchain.pem"
 # update fullchain path in haproxy env
+echo "" >> /home/luddite478/blog/haproxy/.haproxy.env
 echo "HAPROXY_FULLCHAIN_PATH=/haproxy/fullchain.pem" >> /home/luddite478/blog/haproxy/.haproxy.env
+
 
 echo "Starting application..."
 sudo -u luddite478 -i -- sh -c 'cd /home/luddite478/blog && docker-compose up -d --build'
