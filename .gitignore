@@ -4,6 +4,7 @@ iac/terraform/.terraform/
 iac/terraform/terraform.tfstate
 iac/terraform/terraform.tfstate.backup
 **/*.env
-minio
+minio/.minio.env
+minio/data
 haproxy/haproxy.cfg
 uploader/.env
