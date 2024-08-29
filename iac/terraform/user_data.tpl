@@ -49,6 +49,5 @@ echo "$HAPROXY_FULLCHAIN_BASE64" | base64 --decode > "/home/luddite478/blog/hapr
 echo "" >> /home/luddite478/blog/haproxy/.haproxy.env
 echo "HAPROXY_FULLCHAIN_PATH=/haproxy/fullchain.pem" >> /home/luddite478/blog/haproxy/.haproxy.env
 
-
 echo "Starting application..."
 sudo -u luddite478 -i -- sh -c 'cd /home/luddite478/blog && docker-compose up -d --build'
