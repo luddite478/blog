@@ -43,6 +43,7 @@ resource "digitalocean_droplet" "blog" {
 
   user_data = templatefile("${path.module}/user_data.tpl", {
     APPLICATION_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../.env"),
+    HAPROXY_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../haproxy/.haproxy.env"),
     HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"]
   })
 }

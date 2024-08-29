@@ -8,12 +8,14 @@ services:
       - 30200:9000
       - 30100:9001
       - 80:80
-    env_file:
+    env_file: # quotes around variables are not trimmed
       - .env
+    volumes:
+      - ./haproxy:/haproxy
   minio:
     image: minio/minio
     env_file:
-      - .env
+      - ./minio/.minio.env
     volumes:
       - ./minio/data:/data
     command: server /data --console-address ":9001"

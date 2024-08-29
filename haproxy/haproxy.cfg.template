@@ -9,15 +9,15 @@ defaults
     timeout client 50000ms
     timeout server 50000ms
 
-frontend minio
-    bind *:9000
+frontend minio_https
+    bind *:9000 ssl crt ${HAPROXY_FULLCHAIN_PATH}
     default_backend minio
 
 backend minio
     server minio minio:9000
 
 frontend minio-ui
-    bind *:9001
+    bind *:9001 ssl crt ${HAPROXY_FULLCHAIN_PATH}
     default_backend minio-ui
 
 backend minio-ui
