@@ -51,20 +51,23 @@
 <body>
     <div class="container">
         {% for post in posts %}
-            {% if post.audio_s3_path %}
-                <div class="post">
-                    <div class="post-title">{{ post.title }}</div>
-                    <div class="post-content">
+            <div class="post">
+                <h2>{{ post.title }}</h2>
+                {% if post.words %}
+                    <p>{{ post.words }}</p>
+                {% endif %}
+                {% if post.audio_paths %}
+                    {% for path in post.audio_paths %}
                         <div class="audio-player">
                             <audio controls>
-                                <source src="{{ post.audio_s3_path }}" type="audio/mpeg">
+                                <source src="{{ path }}" type="audio/mpeg">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
-                        <div class="date">{{ post.date }}</div>
-                    </div>
-                </div>
-            {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <div class="post-date">{{ post.date }}</div>
+            </div>
         {% endfor %}
     </div>
 </body>

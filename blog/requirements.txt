@@ -2,3 +2,4 @@ minio
 flask
 gunicorn
 python-dotenv
+pymongo

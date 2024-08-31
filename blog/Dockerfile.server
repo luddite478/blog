@@ -6,6 +6,10 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY templates ./templates
-COPY server.py ./
+COPY routes ./routes
+COPY static ./static
+COPY scripts ./scripts
+COPY templates ./templates
+COPY app.py ./
 
-CMD [ "python3", "server.py" ]
+CMD [ "python3", "app.py" ]

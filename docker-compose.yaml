@@ -28,12 +28,10 @@ services:
     env_file:
       - ./blog/.server.env
     working_dir: /app
-    command: gunicorn -w 4 -b 0.0.0.0:80 server:app
+    command: gunicorn -w 4 -b 0.0.0.0:80 app:app
   mongodb:
     image: mongo:latest
     volumes:
       - ./db/data:/data/db
-    ports:
-      - 27017:27017
     env_file:
       - ./mongodb/.mongo.env

@@ -1,35 +1,53 @@
 version: '3'
 services:
   haproxy:
+    # image: blog-haproxy-1
     build: 
       context: haproxy
       dockerfile: Dockerfile.haproxy
     volumes:
       - ./haproxy:/usr/local/etc/haproxy
     ports:
+      - 0.0.0.0:30200:9000
       - 0.0.0.0:30100:9001
       - 0.0.0.0:8080:80
     env_file:
-      - .dev.env
+      - ./haproxy/.haproxy.dev.env
     depends_on:
       - blog
       - minio
+      - mongodb
   minio:
     image: minio/minio
     env_file:
-      - .dev.env
+      - ./minio/.minio.dev.env
     volumes:
       - ./minio/data:/data
     command: server /data --console-address ":9001"
   blog:
-    image: blog-blog:latest
+    image: blog:latest
+    # build: 
+      # context: blog
+      # dockerfile: Dockerfile.server
     env_file:
-      - .dev.env
+      - ./blog/.server.dev.env
     depends_on:
       - minio
+      - mongodb
     working_dir: /app
     volumes:
       - ./blog:/app
-    command: python3 server.py
+    command: python3 app.py
+    # command: python3 app.py
+    restart: unless-stopped
+  mongodb:  
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+    env_file:
+      - ./mongodb/.mongo.env
   debug:
     image: debug:latest
+volumes:
+  mongodb_data:
+    name: mongodb_data

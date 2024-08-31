@@ -8,3 +8,4 @@ minio/.minio.env
 minio/data
 haproxy/haproxy.cfg
 uploader/.env
+*/fullchain.pem

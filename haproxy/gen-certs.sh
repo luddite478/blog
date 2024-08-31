@@ -5,4 +5,4 @@ cat haproxy.key >> fullchain.pem
 base64 -w 0 fullchain.pem > haproxy-fullchain.pem.base64
 
 echo "HAPROXY_FULLCHAIN_BASE64=$(cat haproxy-fullchain.pem.base64)" >> .haproxy.env
-rm haproxy.crt haproxy.key fullchain.pem haproxy-fullchain.pem.base64
+rm haproxy.crt haproxy.key haproxy-fullchain.pem.base64
