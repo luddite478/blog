@@ -13,16 +13,23 @@
         }
 
         .container {
-            width: 60%;
+            width: 40%;
             margin: 0 auto;
-            background-color: #fff;
+            background-color: #a51818;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
         }
 
         .post {
+            background-color: #691901;
             margin-bottom: 40px;
+            padding: 20px;
+            padding-bottom: 40px; /* Increase bottom padding */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
         .post-title {
@@ -39,12 +46,21 @@
 
         .audio-player {
             margin-top: 20px;
+            width: 100%;
+        }
+
+        .audio-player audio {
+            width: 100%;
         }
 
         .date {
             font-size: 0.8em;
             color: #888;
-            text-align: left;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
         }
     </style>
 </head>
@@ -52,6 +68,7 @@
     <div class="container">
         {% for post in posts %}
             <div class="post">
+                <div class="date">{{ post.date }}</div>
                 <h2>{{ post.title }}</h2>
                 {% if post.words %}
                     <p>{{ post.words }}</p>
@@ -59,16 +76,28 @@
                 {% if post.audio_paths %}
                     {% for path in post.audio_paths %}
                         <div class="audio-player">
-                            <audio controls>
+                            <audio controls class="audio-track">
                                 <source src="{{ path }}" type="audio/mpeg">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
                     {% endfor %}
                 {% endif %}
-                <div class="post-date">{{ post.date }}</div>
             </div>
         {% endfor %}
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioTracks = document.querySelectorAll('.audio-track');
+            audioTracks.forEach((audio, index) => {
+                audio.addEventListener('ended', function() {
+                    const nextAudio = audioTracks[index + 1];
+                    if (nextAudio) {
+                        nextAudio.play();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
