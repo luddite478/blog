@@ -16,15 +16,15 @@ services:
       - blog
       - minio
       - mongodb
-  blog:
+  server:
     build: 
-      context: blog
+      context: server
       dockerfile: Dockerfile.server
     depends_on:
       - minio
       - mongodb
     env_file:
-      - ./blog/.server.env
+      - ./server/.server.env
     working_dir: /app
     command: gunicorn -w 4 -b 0.0.0.0:80 app:app
   minio:

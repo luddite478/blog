@@ -23,9 +23,19 @@ frontend minio-ui-https
 backend minio-ui
     server minio-ui minio:9001
 
-frontend blog
+frontend blog-http
     bind *:${BLOG_CONTAINER_PORT}
     default_backend blog
 
 backend blog
     server blog blog:${BLOG_CONTAINER_PORT}
+
+frontend admin-https
+    bind *:33333 ssl crt ${HAPROXY_FULLCHAIN_PATH}
+    acl is_admin_path path_beg /admin
+    use_backend admin if is_admin_path
+    http-request deny if !is_admin_path
+
+backend admin
+    server blog blog:${BLOG_CONTAINER_PORT}
+

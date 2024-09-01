@@ -1,15 +1,12 @@
-locals {
-  env_vars = {
-    for tuple in regexall("(.*?)=(.*)", file("../.infra.env")) :
-    tuple[0] => replace(replace(tuple[1], "/\"/", ""), "/\\r$/", "")
-  }
-}
-
 terraform {
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
       version = "~> 2.0"
+    }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "~> 0.16.2"
     }
   }
 }
@@ -46,7 +43,8 @@ resource "digitalocean_droplet" "blog" {
     HAPROXY_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../haproxy/.haproxy.env"),
     MINIO_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../minio/.minio.env"),
     MONGODB_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../mongodb/.mongo.env"),
-    HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"]
+    HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"],
+    TAILSCALE_AUTH_KEY = local.env_vars["TAILSCALE_AUTH_KEY"]
   })
 }
 

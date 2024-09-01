@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 40%;
+            margin: 0 auto;
+            background-color: #a51818;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .post {
+            background-color: #691901;
+            margin-bottom: 40px;
+            padding: 20px;
+            padding-bottom: 40px; /* Increase bottom padding */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .post-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .audio-player {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .audio-player audio {
+            width: 100%;
+        }
+
+        .date {
+            font-size: 0.8em;
+            color: #888;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        .create-post {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .create-post input[type="text"],
+        .create-post textarea,
+        .create-post input[type="file"],
+        .create-post input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="create-post">
+            <h2>Create New Post</h2>
+            <form action="/api/create-post" method="post" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="Title (optional)">
+                <textarea name="text" placeholder="Text (optional)"></textarea>
+                <input type="file" name="audio" multiple>
+                <input type="text" name="token" placeholder="Token">
+                <input type="submit" value="Create Post">
+            </form>
+        </div>
+
+        {% for post in posts %}
+            <div class="post">
+                <div class="date">{{ post.date }}</div>
+                <h2>{{ post.title }}</h2>
+                {% if post.words %}
+                    <p>{{ post.words }}</p>
+                {% endif %}
+                {% if post.audio %}
+                    {% for audio in post.audio %}
+                        <div class="audio-player">
+                            <audio controls class="audio-track">
+                                <source src="{{ audio.path }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioTracks = document.querySelectorAll('.audio-track');
+            audioTracks.forEach((audio, index) => {
+                audio.addEventListener('ended', function() {
+                    const nextAudio = audioTracks[index + 1];
+                    if (nextAudio) {
+                        nextAudio.play();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

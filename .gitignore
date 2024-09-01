@@ -9,3 +9,4 @@ minio/data
 haproxy/haproxy.cfg
 uploader/.env
 */fullchain.pem
+**/__pycache__/

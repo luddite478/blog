@@ -2,6 +2,7 @@ from flask import Flask
 import logging
 import os
 from routes.home import home
+from routes.admin import admin
 from scripts.init_minio import init_minio
 
 try:
@@ -18,6 +19,7 @@ template_dir = os.path.abspath('./templates')
 app = Flask(__name__, template_folder=template_dir)
 
 app.register_blueprint(home, url_prefix='/')
+app.register_blueprint(admin, url_prefix='/admin')
 
 if __name__ == "__main__":
     PORT = os.environ.get("BLOG_CONTAINER_PORT", 5000)

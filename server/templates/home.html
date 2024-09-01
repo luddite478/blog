@@ -73,11 +73,11 @@
                 {% if post.words %}
                     <p>{{ post.words }}</p>
                 {% endif %}
-                {% if post.audio_paths %}
-                    {% for path in post.audio_paths %}
+                {% if post.audio %}
+                    {% for audio in post.audio %}
                         <div class="audio-player">
                             <audio controls class="audio-track">
-                                <source src="{{ path }}" type="audio/mpeg">
+                                <source src="{{ audio.path }}" type="audio/mpeg">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>

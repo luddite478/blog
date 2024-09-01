@@ -8,7 +8,6 @@ def get_posts():
     db = client['blog']
 
     posts = list(db['posts'].find({}))
-    print(posts)
     client.close()
 
     return posts

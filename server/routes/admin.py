@@ -8,32 +8,32 @@ from flask import Flask, request, jsonify
 from flask import Blueprint, render_template
 from scripts.get_posts import get_posts
 
-home = Blueprint('home', __name__)
-
-load_dotenv()
+admin = Blueprint('admin', __name__)
 
 logging.basicConfig(level=logging.ERROR)
 
-@home.route('/')
-def home_page():
+@admin.route('/')
+def admin_page():
     posts = get_posts()
-    print(posts)
-    processed_posts = []
+    response_posts = []
     for post in posts:
         try:
             post_data = {
                 "date": post['date'] if 'date' in post else '',
-                "audio_paths": [path for path in post['audio']['path']] if 'audio' in post and 'path' in post['audio'] else [],
-                "name": post['audio']['name'] if 'audio' in post and 'name' in post['audio'] else '',
+                "audio": post['audio'] if 'audio' in post else [],
                 "words": post['words'] if 'words' in post else '',
                 "title": post['title'] if 'title' in post else ''
             }
-            processed_posts.append(post_data)
+
+            response_posts.append(post_data)
         except ValueError as e:
             logging.error(f"Error processing post: {e}")
+            return jsonify({"error": "Error processing post"}), 500
     
-    # Render the template as a string
-    rendered_template = render_template('home.html', posts=processed_posts)
+    response_posts.sort(key=lambda x: x['date'], reverse=True)
+
+    # Render the template 
+    rendered_template = render_template('admin.html', posts=response_posts)
     
     # Print the rendered template
     # print(rendered_template)

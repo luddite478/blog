@@ -23,6 +23,7 @@ def init_minio():
     else:
         print(f"Bucket '{bucket_name}' already exists.")
 
+    # Male bucket publicly readable
     policy = {
         "Version": "2012-10-17",
         "Statement": [
@@ -41,3 +42,6 @@ def init_minio():
     # Set the bucket policy
     client.set_bucket_policy(bucket_name, policy_json)
     print(f"Bucket policy for '{bucket_name}' set to public.")
+
+if __name__ == "__main__":
+    init_minio()

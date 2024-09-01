@@ -17,20 +17,13 @@ services:
       - blog
       - minio
       - mongodb
-  minio:
-    image: minio/minio
-    env_file:
-      - ./minio/.minio.dev.env
-    volumes:
-      - ./minio/data:/data
-    command: server /data --console-address ":9001"
-  blog:
+  server:
     image: blog:latest
     # build: 
       # context: blog
       # dockerfile: Dockerfile.server
     env_file:
-      - ./blog/.server.dev.env
+      - ./server/.server.dev.env
     depends_on:
       - minio
       - mongodb
@@ -40,6 +33,13 @@ services:
     command: python3 app.py
     # command: python3 app.py
     restart: unless-stopped
+  minio:
+    image: minio/minio
+    env_file:
+      - ./minio/.minio.dev.env
+    volumes:
+      - ./minio/data:/data
+    command: server /data --console-address ":9001"
   mongodb:  
     image: mongo:latest
     volumes:

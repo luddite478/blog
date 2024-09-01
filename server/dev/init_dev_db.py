@@ -34,11 +34,11 @@ def init_dev_db():
             audio_path = f"{MINIO_PROTOCOL}://{MINIO_PUBLIC_ADDRESSS}/audio/{audio_object.object_name}"
             post = {
                 "date": datetime.now() - timedelta(days=random.randint(1, 30)),  # Randomize the date for each post
-                "audio":  {
-                    'path': [audio_path],
+                "audio":  [{
+                    'path': audio_path,
                     'name': audio_object.object_name.split('.')[0],
                     'extension': audio_object.object_name.split('.')[1]
-                },
+                }],
                 "words": "",  # Assuming you want to leave this blank or customize it per song
                 "title": ""
             }
