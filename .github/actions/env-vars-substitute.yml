@@ -1,0 +1,39 @@
+name: Substitute Environment Variables
+description: Reads an example env file and substitutes values using secrets and vars.
+
+inputs:
+  example_env_file:
+    description: 'Path to the example env file'
+    required: true
+  output_env_file:
+    description: 'Path to the output env file'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Read and Substitute Environment Variables
+      run: |
+        echo '${{ toJSON(secrets) }}' > secrets.json
+        echo '${{ toJSON(vars) }}' > vars.json
+
+        echo "Reading and substituting environment variables..."
+        cat ${{ inputs.example_env_file }}
+
+        while IFS='=' read -r key value; do
+          key=$(echo $key | xargs)
+          if [[ ! -z "$key" && ! $key =~ ^# ]]; then
+            secret_value=$(jq -r --arg key "$key" '.[$key]' secrets.json)
+            echo "Processing key: $key"
+            echo "Original value: $value"
+            echo "Secret value: $secret_value"
+            if [[ ! -z "$secret_value" && "$secret_value" != "null" ]]; then
+              echo "$key=$secret_value" >> ${{ inputs.output_env_file }}
+            else
+              echo "$key=$value" >> ${{ inputs.output_env_file }}
+            fi
+          fi
+        done < ${{ inputs.example_env_file }}
+
+        echo "Resulting env file:"
+        cat ${{ inputs.output_env_file }}
