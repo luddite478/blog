@@ -39,4 +39,4 @@ services:
     volumes:
       - ./db/data:/data/db
     env_file:
-      - ./mongodb/.mongo.env
+      - ./mongodb/.mongodb.env
