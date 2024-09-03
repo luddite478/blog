@@ -29,24 +29,14 @@ sudo chown luddite478:luddite478 /home/luddite478/blog
 git clone https://github.com/luddite478/blog /home/luddite478/blog
 sudo chown -R luddite478:luddite478 /home/luddite478/blog
 
-echo "Extracting application env..."
-echo "${APPLICATION_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/blog/.server.env
+gh workflow run deploy-secrets.yml && \
+sleep 5 && \
+gh run watch $(gh run list --workflow=deploy-secrets.yml --json databaseId --limit 1 | jq .[0].'databaseId')
 
-echo "Extracting minio env..."
-echo "${MINIO_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/minio/.minio.env
-
-echo "Extracting mongodb env..."
-echo "${MONGODB_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/mongodb/.mongo.env
-
-echo "Extracting haproxy env..."
-echo "${HAPROXY_ENV_VARIABLES_BASE64}" | base64 --decode > /home/luddite478/blog/haproxy/.haproxy.env
 # extract fullchain value
 HAPROXY_FULLCHAIN_BASE64=$(grep 'HAPROXY_FULLCHAIN_BASE64' /home/luddite478/blog/haproxy/.haproxy.env | cut -d'=' -f2)
 # save fullchain value to file
 echo "$HAPROXY_FULLCHAIN_BASE64" | base64 --decode > "/home/luddite478/blog/haproxy/fullchain.pem"
-# update fullchain path in haproxy env
-echo "" >> /home/luddite478/blog/haproxy/.haproxy.env
-echo "HAPROXY_FULLCHAIN_PATH=/haproxy/fullchain.pem" >> /home/luddite478/blog/haproxy/.haproxy.env
 
 echo "Setup tailscale..."
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
@@ -54,7 +44,6 @@ curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list
 sudo apt-get update
 sudo apt-get install tailscale
 sudo tailscale up --authkey ${TAILSCALE_AUTH_KEY}
-
 
 echo "Starting application..."
 sudo -u luddite478 -i -- sh -c 'cd /home/luddite478/blog && docker-compose up -d --build'
