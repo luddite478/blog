@@ -73,7 +73,7 @@ def create_post():
         "title": title,
         "date": date,
         "words": words,
-        "file_urls": file_urls  # List of MinIO URLs
+        "file_urls": file_urls 
     }
 
     # Insert the post data into the MongoDB collection
@@ -83,3 +83,4 @@ def create_post():
     except Exception as e:
         logging.error(f"Error inserting post into MongoDB: {e}")
         return jsonify({"error": "Error creating post"}), 500
+    

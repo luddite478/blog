@@ -39,11 +39,8 @@ resource "digitalocean_droplet" "blog" {
   ]
 
   user_data = templatefile("${path.module}/user_data.tpl", {
-    APPLICATION_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../blog/.server.env"),
-    HAPROXY_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../haproxy/.haproxy.env"),
-    MINIO_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../minio/.minio.env"),
-    MONGODB_ENV_VARIABLES_BASE64 = filebase64("${path.module}/../../mongodb/.mongo.env"),
     HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"],
+    GITHUB_WORKFLOW_TOKEN = local.env_vars["GITHUB_WORKFLOW_TOKEN"],
     TAILSCALE_AUTH_KEY = local.env_vars["TAILSCALE_AUTH_KEY"]
   })
 }

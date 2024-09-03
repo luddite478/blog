@@ -13,7 +13,7 @@ services:
     volumes:
       - ./haproxy:/haproxy
     depends_on:
-      - blog
+      - server
       - minio
       - mongodb
   server:
