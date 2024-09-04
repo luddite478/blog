@@ -12,7 +12,7 @@ while lsof /var/cache/apt/archives/lock; do sleep 10; done
 
 echo "Install packages..."
 sudo apt-get update
-sudo apt-get install -y git docker docker-compose
+sudo apt-get install -y git docker docker-compose jq
 
 echo "Setting up users repo..."
 # Define variables
@@ -31,6 +31,7 @@ sudo mkdir -p /home/$USERNAME/blog
 sudo chown $USERNAME:$USERNAME /home/$USERNAME/blog
 git clone https://github.com/luddite478/blog /home/$USERNAME/blog
 sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/blog
+git config --global --add safe.directory /home/$USERNAME/blog
 
 echo "Running GitHub Actions workflow to deploy secrets..."
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
@@ -39,6 +40,7 @@ sudo apt-add-repository https://cli.github.com/packages
 sudo apt update
 sudo apt install gh
 echo ${GITHUB_WORKFLOW_TOKEN} | gh auth login --with-token 
+cd /home/$USERNAME/blog
 gh workflow run deploy-secrets.yml && \
 sleep 5 && \
 gh run watch $(gh run list --workflow=deploy-secrets.yml --json databaseId --limit 1 | jq .[0].'databaseId')
