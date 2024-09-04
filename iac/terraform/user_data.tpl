@@ -39,9 +39,10 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-key 23F3D4EA75716059
 apt-add-repository https://cli.github.com/packages
 apt update
 apt install gh
-echo ${GITHUB_WORKFLOW_TOKEN} | gh auth login --with-token 
 cd $REPO_DIR
+export HOME="/root"
 git config --global --add safe.directory $REPO_DIR
+echo ${GITHUB_WORKFLOW_TOKEN} | gh auth login --with-token 
 gh workflow run deploy-secrets.yml -f restart=false && \
 sleep 5 && \
 gh run watch $(gh run list --workflow=deploy-secrets.yml --json databaseId --limit 1 | jq .[0].'databaseId')
