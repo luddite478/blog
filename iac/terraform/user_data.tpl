@@ -48,7 +48,7 @@ sleep 5 && \
 gh run watch $(gh run list --workflow=deploy-secrets.yml --json databaseId --limit 1 | jq .[0].'databaseId')
 
 # extract fullchain value from .haproxy.env and decode it
-HAPROXY_FULLCHAIN_BASE64=$(grep 'HAPROXY_FULLCHAIN_BASE64' $REPO_DIR/haproxy/.haproxy.env | cut -d'=' -f2)
+HAPROXY_FULLCHAIN_BASE64=$(awk -F'=' '/HAPROXY_FULLCHAIN_BASE64/ {print substr($0, index($0,$2))}' $REPO_DIR/haproxy/.haproxy.env)
 echo "$HAPROXY_FULLCHAIN_BASE64" | base64 --decode > "$REPO_DIR/haproxy/fullchain.pem"
 
 echo "Setup tailscale..."
