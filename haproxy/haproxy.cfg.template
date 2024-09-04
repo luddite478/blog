@@ -17,25 +17,25 @@ backend minio
     server minio minio:9000
 
 frontend minio-ui-https
-    bind *:9001 ssl crt ${HAPROXY_FULLCHAIN_PATH}
+    bind *:9001 ssl crt /haproxy/fullchain.pem
     default_backend minio-ui
 
 backend minio-ui
     server minio-ui minio:9001
 
 frontend blog-http
-    bind *:${BLOG_CONTAINER_PORT}
+    bind *:80
     default_backend blog
 
 backend blog
-    server blog blog:${BLOG_CONTAINER_PORT}
+    server blog blog:80
 
 frontend admin-https
-    bind *:33333 ssl crt ${HAPROXY_FULLCHAIN_PATH}
+    bind *:33333 ssl crt /haproxy/fullchain.pem
     acl is_admin_path path_beg /admin
     use_backend admin if is_admin_path
     http-request deny if !is_admin_path
 
 backend admin
-    server blog blog:${BLOG_CONTAINER_PORT}
+    server blog blog:80
 
