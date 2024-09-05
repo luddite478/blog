@@ -70,6 +70,7 @@ echo "$VOLUME_ID $MOUNT_POINT xfs defaults,nofail,discard,noatime 0 2" >> /etc/f
 
 mkdir $MOUNT_POINT/minio
 mkdir $MOUNT_POINT/mongodb
+chown -R $USERNAME:$USERNAME $MOUNT_POINT/minio $MOUNT_POINT/mongodb
 
 echo "Starting application..."
 sudo -u "$USERNAME" -i -- sh -c "cd $REPO_DIR && docker-compose up -d --build"
