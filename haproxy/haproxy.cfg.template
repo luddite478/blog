@@ -28,7 +28,7 @@ frontend blog-http
     default_backend blog
 
 backend blog
-    server blog blog:80
+    server blog server:80
 
 frontend admin-https
     bind *:33333 ssl crt /haproxy/fullchain.pem
@@ -37,5 +37,5 @@ frontend admin-https
     http-request deny if !is_admin_path
 
 backend admin
-    server blog blog:80
+    server blog server:80
 
