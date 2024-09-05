@@ -42,8 +42,9 @@ apt install gh
 cd $REPO_DIR
 export HOME="/root"
 git config --global --add safe.directory $REPO_DIR
+ETH0_IP=$(ifconfig eth0 | grep 'inet' | awk '{ print $2 }' | grep -v -E '^(10|100|172\.16|192\.168)' | head -n 1)
 echo ${GITHUB_WORKFLOW_TOKEN} | gh auth login --with-token 
-gh workflow run deploy-secrets.yml -f restart-containers=false && \
+gh workflow run deploy-secrets.yml -f restart-containers=false -f vm_ip=$ETH0_IP && \
 sleep 5 && \
 gh run watch $(gh run list --workflow=deploy-secrets.yml --json databaseId --limit 1 | jq .[0].'databaseId')
 
@@ -61,12 +62,15 @@ tailscale up --authkey ${TAILSCALE_AUTH_KEY}
 echo "Mounting the volume..."
 VOLUME_ID="/dev/disk/by-id/scsi-0DO_Volume_blog-volume"
 MOUNT_POINT="/mnt/blog-volume"
+
 # Create a mount point
 mkdir -p $MOUNT_POINT
-# Mount the volume
+if ! blkid $VOLUME_ID; then
+  echo "Formatting the volume..."
+  mkfs.ext4 $VOLUME_ID
+fi
 mount -o defaults,nofail,discard,noatime $VOLUME_ID $MOUNT_POINT
-# Update /etc/fstab to mount the volume on reboot
-echo "$VOLUME_ID $MOUNT_POINT xfs defaults,nofail,discard,noatime 0 2" >> /etc/fstab
+echo "$VOLUME_ID $MOUNT_POINT ext4 defaults,nofail,discard,noatime 0 2" >> /etc/fstab
 
 mkdir $MOUNT_POINT/minio
 mkdir $MOUNT_POINT/mongodb
