@@ -12,7 +12,7 @@ while lsof /var/cache/apt/archives/lock; do sleep 10; done
 
 echo "Install packages..."
 apt-get update
-apt-get install -y git docker docker-compose jq
+apt-get install -y git docker docker-compose jq net-tools
 
 echo "Setting up users repo..."
 # Define variables
@@ -57,7 +57,7 @@ curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
 apt-get update
 apt-get install -y tailscale
-tailscale up --authkey ${TAILSCALE_AUTH_KEY}
+tailscale up --hostname=blog --authkey ${TAILSCALE_AUTH_KEY}
 
 echo "Mounting the volume..."
 VOLUME_ID="/dev/disk/by-id/scsi-0DO_Volume_blog-volume"
