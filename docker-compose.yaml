@@ -32,11 +32,11 @@ services:
     env_file:
       - ./minio/.minio.env
     volumes:
-      - ./minio/data:/data
+      - /mnt/blog-volume/minio/data:/data
     command: server /data --console-address ":9001"
   mongodb:
     image: mongo:latest
     volumes:
-      - ./db/data:/data/db
+      - /mnt/blog-volume/mongodb/data:/data/db
     env_file:
       - ./mongodb/.mongodb.env

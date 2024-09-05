@@ -58,5 +58,18 @@ apt-get update
 apt-get install -y tailscale
 tailscale up --authkey ${TAILSCALE_AUTH_KEY}
 
+echo "Mounting the volume..."
+VOLUME_ID="/dev/disk/by-id/scsi-0DO_Volume_blog-volume"
+MOUNT_POINT="/mnt/blog-volume"
+# Create a mount point
+mkdir -p $MOUNT_POINT
+# Mount the volume
+mount -o defaults,nofail,discard,noatime $VOLUME_ID $MOUNT_POINT
+# Update /etc/fstab to mount the volume on reboot
+echo "$VOLUME_ID $MOUNT_POINT xfs defaults,nofail,discard,noatime 0 2" >> /etc/fstab
+
+mkdir $MOUNT_POINT/minio
+mkdir $MOUNT_POINT/mongodb
+
 echo "Starting application..."
 sudo -u "$USERNAME" -i -- sh -c "cd $REPO_DIR && docker-compose up -d --build"

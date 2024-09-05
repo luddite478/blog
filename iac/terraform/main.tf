@@ -41,6 +41,17 @@ resource "digitalocean_droplet" "blog" {
   })
 }
 
+resource "digitalocean_volume" "blog_volume" {
+  name   = "blog-volume"
+  region = "ams3"
+  size   = 5
+}
+
+resource "digitalocean_volume_attachment" "blog_volume_attachment" {
+  droplet_id = digitalocean_droplet.blog.id
+  volume_id  = digitalocean_volume.blog_volume.id
+}
+
 output "ip" {
   value = digitalocean_droplet.blog.ipv4_address
 }
