@@ -61,7 +61,7 @@ tailscale login --authkey ${TAILSCALE_AUTH_KEY}
 tailscale status --json | jq '[.Peer[] | select(.HostName == "blog")]' > existing_blog_machines_ids.json
 if [ -s existing_blog_machines_ids.json ]; then
   jq -r '.[].ID' existing_blog_machines_ids.json | while read -r id; do
-    curl -X DELETE "https://api.tailscale.com/api/v2/device/$id" -u "${TAILSCALE_AUTH_KEY}:"
+    curl -X DELETE "https://api.tailscale.com/api/v2/device/$id" -u "${TAILSCALE_API_KEY}:"
   done
 fi
 tailscale up --hostname=blog --authkey ${TAILSCALE_AUTH_KEY}
