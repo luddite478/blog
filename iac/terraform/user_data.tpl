@@ -64,6 +64,7 @@ if [ -s existing_blog_machines_ids.json ]; then
     curl -X DELETE "https://api.tailscale.com/api/v2/device/$id" -u "${TAILSCALE_API_KEY}:"
   done
 fi
+sleep 5
 tailscale up --hostname=blog --authkey ${TAILSCALE_AUTH_KEY}
 export TAILSCALE_IP=$(tailscale ip --4)
 echo "tailscale ip: $TAILSCALE_IP"
@@ -72,8 +73,9 @@ echo "Mounting the volume..."
 VOLUME_ID="/dev/disk/by-id/scsi-0DO_Volume_blog-volume"
 MOUNT_POINT="/mnt/blog-volume"
 
-# Create a mount point
-mkdir -p $MOUNT_POINT
+if [ ! -d "$MOUNT_POINT" ]; then
+    mkdir -p "$MOUNT_POINT"
+fi
 if ! blkid $VOLUME_ID; then
     echo "Formatting the volume..."
     mkfs.ext4 $VOLUME_ID
