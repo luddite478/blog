@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from flask import Blueprint, render_template
 from scripts.get_posts import get_posts
 from datetime import datetime
+from pymongo import MongoClient
 
 api = Blueprint('api', __name__)
 
@@ -20,8 +21,16 @@ minioClient = Minio(
     secure=False
 )
 
-ADMIN_API_TOKEN = os.environ.get("ADMIN_API_TOKEN")
-MINIO_BUCKET_NAME = "your-bucket-name"
+MINIO_BUCKET_NAME = "audio"
+
+try:
+    MONGO_URI = os.environ.get('MONGO_URI')
+    mongo_client = MongoClient(MONGO_URI)
+    db = mongo_client['blog']
+    
+except Exception as e:
+    logging.error(f"Error connecting to MongoDB: {e}")
+    raise
 
 def upload_files_to_minio(files):
     file_urls = []
@@ -44,10 +53,7 @@ def upload_files_to_minio(files):
 
 @app.route('/create_post', methods=['POST'])
 def create_post():
-    token = request.args.get('token')
-    if not token or token != ADMIN_API_TOKEN:
-        return jsonify({"error": "Invalid or missing token"}), 400
-    
+        
     # Ensure the request contains form data
     if not request.form:
         return jsonify({"error": "Request must contain form data"}), 400
@@ -62,13 +68,11 @@ def create_post():
 
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Upload the files to MinIO
     try:
         file_urls = upload_files_to_minio(files)
     except Exception as e:
         return jsonify({"error": "Error uploading files"}), 500
 
-    # Prepare post data
     post_data = {
         "title": title,
         "date": date,
@@ -76,7 +80,6 @@ def create_post():
         "file_urls": file_urls 
     }
 
-    # Insert the post data into the MongoDB collection
     try:
         result = db.posts.insert_one(post_data)
         return jsonify({"message": "Post created", "post_id": str(result.inserted_id)}), 201
