@@ -58,13 +58,13 @@ curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list
 apt-get update
 apt-get install -y tailscale
 tailscale login --authkey ${TAILSCALE_AUTH_KEY}
-tailscale status --json | jq '[.Peer[] | select(.HostName == "blog")]' > existing_blog_machines_ids.json
+tailscale status --json | jq '[.Peer[] | select(.HostName == "blog") | .ID ]' > existing_blog_machines_ids.json
 if [ -s existing_blog_machines_ids.json ]; then
-  jq -r '.[].ID' existing_blog_machines_ids.json | while read -r id; do
+  jq -r '.[]' existing_blog_machines_ids.json | while read -r id; do
     curl -X DELETE "https://api.tailscale.com/api/v2/device/$id" -u "${TAILSCALE_API_KEY}:"
   done
 fi
-sleep 5
+sleep 10
 tailscale up --hostname=blog --authkey ${TAILSCALE_AUTH_KEY}
 export TAILSCALE_IP=$(tailscale ip --4)
 echo "tailscale ip: $TAILSCALE_IP"
@@ -76,19 +76,34 @@ MOUNT_POINT="/mnt/blog-volume"
 if [ ! -d "$MOUNT_POINT" ]; then
     mkdir -p "$MOUNT_POINT"
 fi
+
 if ! blkid $VOLUME_ID; then
     echo "Formatting the volume..."
     mkfs.ext4 $VOLUME_ID
 fi
-mount -o defaults,nofail,discard,noatime $VOLUME_ID $MOUNT_POINT
-echo "$VOLUME_ID $MOUNT_POINT ext4 defaults,nofail,discard,noatime 0 2" >> /etc/fstab
 
-mkdir $MOUNT_POINT/minio
-mkdir $MOUNT_POINT/mongodb
+if ! mountpoint -q "$MOUNT_POINT"; then
+    mount -o defaults,nofail,discard,noatime $VOLUME_ID "$MOUNT_POINT"
+else
+    echo "Volume is already mounted on $MOUNT_POINT"
+fi
+
+if ! grep -qs "$MOUNT_POINT" /etc/fstab; then
+    echo "$VOLUME_ID $MOUNT_POINT ext4 defaults,nofail,discard,noatime 0 2" >> /etc/fstab
+fi
+
+if [ ! -d "$MOUNT_POINT/minio" ]; then
+    mkdir -p "$MOUNT_POINT/minio"
+fi
+
+if [ ! -d "$MOUNT_POINT/mongodb" ]; then
+    mkdir -p "$MOUNT_POINT/mongodb"
+fi
+
 chown -R $USERNAME:$USERNAME $MOUNT_POINT/minio $MOUNT_POINT/mongodb
 
 echo "Substituting environment variables in Docker Compose file..."
-envsubst < $REPO_DIR/docker-compose.yml > $REPO_DIR/docker-compose.envsubst.yml
+envsubst < $REPO_DIR/docker-compose.yaml > $REPO_DIR/docker-compose.envsubst.yaml
 
 echo "Starting application..."
-sudo -u "$USERNAME" -i -- sh -c "cd $REPO_DIR && docker-compose -f docker-compose.envsubst.yml up -d --build"
+sudo -u "$USERNAME" -i -- sh -c "cd $REPO_DIR && docker-compose -f docker-compose.envsubst.yaml up -d --build"

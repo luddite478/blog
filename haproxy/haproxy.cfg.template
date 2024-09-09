@@ -16,8 +16,8 @@ frontend minio-download-http
 backend minio
     server minio minio:9000
 
-frontend minio-ui-https
-    bind *:9001 ssl crt /haproxy/fullchain.pem
+frontend minio-ui-http
+    bind *:9001
     default_backend minio-ui
 
 backend minio-ui
