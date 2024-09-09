@@ -26,7 +26,9 @@ jobs:
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
           cd "${{ env.REPO_DIR_PATH}}"
           git config --global --add safe.directory ${{ env.REPO_DIR_PATH}}
-          git pull origin master
+          git fetch origin
+          git reset --hard origin/master
+          git clean -fd
         EOF
 
     - name: Stop and rerun Docker Compose
