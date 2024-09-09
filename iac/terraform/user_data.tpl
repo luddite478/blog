@@ -12,7 +12,7 @@ while lsof /var/cache/apt/archives/lock; do sleep 10; done
 
 echo "Install packages..."
 apt-get update
-apt-get install -y git docker docker-compose jq net-tools
+apt-get install -y git docker docker-compose jq net-tools gettext-base
 
 echo "Setting up users repo..."
 # Define variables
@@ -57,7 +57,16 @@ curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list
 apt-get update
 apt-get install -y tailscale
+tailscale login --authkey ${TAILSCALE_AUTH_KEY}
+tailscale status --json | jq '[.Peer[] | select(.HostName == "blog")]' > existing_blog_machines_ids.json
+if [ -s existing_blog_machines_ids.json ]; then
+  jq -r '.[].ID' existing_blog_machines_ids.json | while read -r id; do
+    curl -X DELETE "https://api.tailscale.com/api/v2/device/$id" -u "${TAILSCALE_AUTH_KEY}:"
+  done
+fi
 tailscale up --hostname=blog --authkey ${TAILSCALE_AUTH_KEY}
+export TAILSCALE_IP=$(tailscale ip --4)
+echo "tailscale ip: $TAILSCALE_IP"
 
 echo "Mounting the volume..."
 VOLUME_ID="/dev/disk/by-id/scsi-0DO_Volume_blog-volume"
@@ -66,8 +75,8 @@ MOUNT_POINT="/mnt/blog-volume"
 # Create a mount point
 mkdir -p $MOUNT_POINT
 if ! blkid $VOLUME_ID; then
-  echo "Formatting the volume..."
-  mkfs.ext4 $VOLUME_ID
+    echo "Formatting the volume..."
+    mkfs.ext4 $VOLUME_ID
 fi
 mount -o defaults,nofail,discard,noatime $VOLUME_ID $MOUNT_POINT
 echo "$VOLUME_ID $MOUNT_POINT ext4 defaults,nofail,discard,noatime 0 2" >> /etc/fstab
@@ -76,5 +85,8 @@ mkdir $MOUNT_POINT/minio
 mkdir $MOUNT_POINT/mongodb
 chown -R $USERNAME:$USERNAME $MOUNT_POINT/minio $MOUNT_POINT/mongodb
 
+echo "Substituting environment variables in Docker Compose file..."
+envsubst < $REPO_DIR/docker-compose.yml > $REPO_DIR/docker-compose.envsubst.yml
+
 echo "Starting application..."
-sudo -u "$USERNAME" -i -- sh -c "cd $REPO_DIR && docker-compose up -d --build"
+sudo -u "$USERNAME" -i -- sh -c "cd $REPO_DIR && docker-compose -f docker-compose.envsubst.yml up -d --build"

@@ -37,7 +37,8 @@ resource "digitalocean_droplet" "blog" {
   user_data = templatefile("${path.module}/user_data.tpl", {
     HOST_ROOT_PASSWORD = local.env_vars["HOST_ROOT_PASSWORD"],
     GITHUB_WORKFLOW_TOKEN = local.env_vars["GITHUB_WORKFLOW_TOKEN"],
-    TAILSCALE_AUTH_KEY = local.env_vars["TAILSCALE_AUTH_KEY"]
+    TAILSCALE_AUTH_KEY = local.env_vars["TAILSCALE_AUTH_KEY"],
+    TAILSCALE_API_KEY = local.env_vars["TAILSCALE_API_KEY"]
   })
 }
 
