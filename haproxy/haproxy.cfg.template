@@ -30,11 +30,10 @@ frontend blog-http
 backend blog
     server blog server:80
 
-frontend admin-https
-    bind *:33333 ssl crt /haproxy/fullchain.pem
-    acl is_admin_path path_beg /admin
-    use_backend admin if is_admin_path
-    http-request deny if !is_admin_path
+frontend admin-http
+    bind *:33333
+    http-request set-path /admin%[path]
+    default_backend admin
 
 backend admin
     server blog server:80

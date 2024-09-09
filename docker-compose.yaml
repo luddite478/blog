@@ -5,9 +5,10 @@ services:
       context: haproxy
       dockerfile: Dockerfile.haproxy
     ports:
-      - 33333:33333
-      - 30100:9001
       - 80:80
+      - ${TAILSCALE_IP}:33333:33333
+      - ${TAILSCALE_IP}:30200:9000
+      - ${TAILSCALE_IP}:30100:9001 
     env_file: # quotes around variables are not trimmed
       - ./haproxy/.haproxy.env
     volumes:
