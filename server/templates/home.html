@@ -13,7 +13,8 @@
         }
 
         .container {
-            width: 40%; 
+            width: 90%; /* Adjust width for smaller screens */
+            max-width: 600px; /* Set a max-width for larger screens */
             margin: 0 auto;
             background-color: #f9f8f8;
             padding: 20px;
@@ -33,10 +34,9 @@
         }
 
         .post-title {
-            font-size: 20px;
+            font-size: 24px;
             color: #2a2929;
             margin-bottom: 10px;
-            margin-top: 20px; /* Add margin-top to create space for the date */
         }
 
         .post-content {
@@ -58,10 +58,7 @@
             font-size: 0.9em;
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
             color: #181818;
-            position: absolute;
-            top: 14px; /* Adjusted to make space for the title */
-            left: 0;
-            right: 0;
+            margin-top: 10px; /* Add margin to separate from delete button */
             text-align: center;
         }
 
@@ -103,12 +100,38 @@
         .delete-button:hover {
             background-color: #ff1a1a;
         }
+
+        @media (max-width: 600px) {
+            .post-title {
+                font-size: 20px;
+            }
+
+            .post-content {
+                font-size: 16px;
+            }
+
+            .create-post input[type="text"],
+            .create-post textarea,
+            .create-post input[type="file"],
+            .create-post input[type="submit"] {
+                padding: 8px;
+                margin: 8px 0;
+            }
+
+            .delete-button {
+                padding: 4px 8px;
+                font-size: 0.7em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         {% for post in posts %}
         <div class="post" data-post-id="{{ post.id }}">
+            <div class="delete-container">
+                <button class="delete-button">Delete</button>
+            </div>
             <div class="date">{{ post.date }}</div>
             <h2 class="post-title">{{ post.title }}</h2>
             {% if post.words %}
