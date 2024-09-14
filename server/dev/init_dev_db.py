@@ -23,6 +23,29 @@ minio_client = Minio(
     secure=False
 )
 
+# {
+#     'date': ISODate('2024-09-03T16:00:59.370Z'),
+#     'title': '',
+#     'blocks': [
+#         {
+#             'type': 'words',
+#             'text': 'This is a test post'
+#         },
+#         {
+#             'type': 'audio',
+#             's3_path': 'http://localhost:30200/audio/НеизвестенSR-04-Безназвания.mp3',
+#             'name': 'Неизвестен SR-04 - Без названия',
+#             'extension': 'mp3'
+#         },
+#         {
+#             'type': 'video',
+#             's3_path': 'http://localhost:30200/video/test.mp4',
+#             'name': 'Неизвестен SR-04 - Без названия',
+#             'extension': 'mp4'
+#         }
+#     ]
+# }
+
 # if 'posts' not in db.list_collection_names():
 #     db.create_collection('posts')
     
@@ -34,13 +57,13 @@ def init_dev_db():
             audio_path = f"{MINIO_PROTOCOL}://{MINIO_PUBLIC_ADDRESSS}/audio/{audio_object.object_name}"
             post = {
                 "date": datetime.now() - timedelta(days=random.randint(1, 30)),  # Randomize the date for each post
-                "audio":  [{
-                    'path': audio_path,
+                "title": "",
+                "blocks":  [{
+                    'type': 'audio',
+                    's3_path': audio_path,
                     'name': audio_object.object_name.split('.')[0],
                     'extension': audio_object.object_name.split('.')[1]
-                }],
-                "words": "",  # Assuming you want to leave this blank or customize it per song
-                "title": ""
+                }],   
             }
             posts.append(post)
 

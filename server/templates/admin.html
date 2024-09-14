@@ -13,19 +13,19 @@
         }
 
         .container {
-            width: 40%;
+            width: 40%; 
             margin: 0 auto;
-            background-color: #a51818;
+            background-color: #f9f8f8;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
         }
 
         .post {
-            background-color: #691901;
-            margin-bottom: 40px;
+            background-color: #fbfbfb;
+            margin-bottom: 5px;
             padding: 20px;
-            padding-bottom: 40px; /* Increase bottom padding */
+            padding-bottom: 5%; /* Increase bottom padding */
             border: 1px solid #ddd;
             border-radius: 5px;
             position: relative;
@@ -34,7 +34,7 @@
 
         .post-title {
             font-size: 24px;
-            color: #333;
+            color: #2a2929;
             margin-bottom: 10px;
         }
 
@@ -54,12 +54,10 @@
         }
 
         .date {
-            font-size: 0.8em;
-            color: #888;
-            position: absolute;
-            top: 10px;
-            left: 0;
-            right: 0;
+            font-size: 0.9em;
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: #181818;
+            margin-top: 10px; /* Add margin to separate from delete button */
             text-align: center;
         }
 
@@ -81,39 +79,68 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
+        .delete-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .delete-button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s;
+        }
+
+        .delete-button:hover {
+            background-color: #ff1a1a;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="create-post">
             <h2>Create New Post</h2>
-            <form action="/api/create-post" method="post" enctype="multipart/form-data">
+            <form id="create-post-form" action="/api/create-post" method="post" enctype="multipart/form-data">
+                <input type="file" name="files" multiple>
                 <input type="text" name="title" placeholder="Title (optional)">
-                <textarea name="text" placeholder="Text (optional)"></textarea>
-                <input type="file" name="audio" multiple>
-                <input type="text" name="token" placeholder="Token">
+                <textarea name="words" placeholder="Text (optional)"></textarea>
                 <input type="submit" value="Create Post">
             </form>
         </div>
 
         {% for post in posts %}
-            <div class="post">
-                <div class="date">{{ post.date }}</div>
-                <h2>{{ post.title }}</h2>
-                {% if post.words %}
-                    <p>{{ post.words }}</p>
-                {% endif %}
-                {% if post.audio %}
-                    {% for audio in post.audio %}
+        <div class="post" data-post-id="{{ post.id }}">
+            <div class="delete-container">
+                <button class="delete-button">Delete</button>
+            </div>
+            <div class="date">{{ post.date }}</div>
+            <h2>{{ post.title }}</h2>
+            {% if post.words %}
+                <p>{{ post.words }}</p>
+            {% endif %}
+            {% if post.blocks %}
+                {% for block in post.blocks %}
+                    {% if block.type == "audio" %}
                         <div class="audio-player">
                             <audio controls class="audio-track">
-                                <source src="{{ audio.path }}" type="audio/mpeg">
+                                <source src="{{ block.s3_path }}" type="audio/mpeg">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
-                    {% endfor %}
+                    {% endif %}
+                    {% if block.type == "words" %}
+                    <div>
+                        <p>{{ block.text }}</p>
+                    </div>
                 {% endif %}
-            </div>
+                {% endfor %}
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
     <script>
@@ -124,6 +151,53 @@
                     const nextAudio = audioTracks[index + 1];
                     if (nextAudio) {
                         nextAudio.play();
+                    }
+                });
+            });
+    
+ 
+            const createPostForm = document.getElementById('create-post-form');
+            createPostForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const formData = new FormData(createPostForm);
+
+                fetch('/api/create-post', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+
+            const deleteButtons = document.querySelectorAll('.delete-button');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const postId = this.closest('.post').getAttribute('data-post-id');
+                    const isConfirmed = confirm('Are you sure you want to delete this post?');
+
+                    if (isConfirmed) {
+                        fetch(`/api/delete-posts`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ ids: [postId] })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
                     }
                 });
             });

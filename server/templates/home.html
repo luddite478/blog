@@ -13,19 +13,19 @@
         }
 
         .container {
-            width: 40%;
+            width: 40%; 
             margin: 0 auto;
-            background-color: #a51818;
+            background-color: #f9f8f8;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
         }
 
         .post {
-            background-color: #691901;
-            margin-bottom: 40px;
+            background-color: #fbfbfb;
+            margin-bottom: 5px;
             padding: 20px;
-            padding-bottom: 40px; /* Increase bottom padding */
+            padding-bottom: 5%; /* Increase bottom padding */
             border: 1px solid #ddd;
             border-radius: 5px;
             position: relative;
@@ -33,9 +33,10 @@
         }
 
         .post-title {
-            font-size: 24px;
-            color: #333;
+            font-size: 20px;
+            color: #2a2929;
             margin-bottom: 10px;
+            margin-top: 20px; /* Add margin-top to create space for the date */
         }
 
         .post-content {
@@ -54,36 +55,83 @@
         }
 
         .date {
-            font-size: 0.8em;
-            color: #888;
+            font-size: 0.9em;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: #181818;
             position: absolute;
-            top: 10px;
+            top: 14px; /* Adjusted to make space for the title */
             left: 0;
             right: 0;
             text-align: center;
+        }
+
+        .create-post {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .create-post input[type="text"],
+        .create-post textarea,
+        .create-post input[type="file"],
+        .create-post input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .delete-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .delete-button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s;
+        }
+
+        .delete-button:hover {
+            background-color: #ff1a1a;
         }
     </style>
 </head>
 <body>
     <div class="container">
         {% for post in posts %}
-            <div class="post">
-                <div class="date">{{ post.date }}</div>
-                <h2>{{ post.title }}</h2>
-                {% if post.words %}
-                    <p>{{ post.words }}</p>
-                {% endif %}
-                {% if post.audio %}
-                    {% for audio in post.audio %}
+        <div class="post" data-post-id="{{ post.id }}">
+            <div class="date">{{ post.date }}</div>
+            <h2 class="post-title">{{ post.title }}</h2>
+            {% if post.words %}
+                <p>{{ post.words }}</p>
+            {% endif %}
+            {% if post.blocks %}
+                {% for block in post.blocks %}
+                    {% if block.type == "audio" %}
                         <div class="audio-player">
                             <audio controls class="audio-track">
-                                <source src="{{ audio.path }}" type="audio/mpeg">
+                                <source src="{{ block.s3_path }}" type="audio/mpeg">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
-                    {% endfor %}
+                    {% endif %}
+                    {% if block.type == "words" %}
+                    <div>
+                        <p>{{ block.text }}</p>
+                    </div>
                 {% endif %}
-            </div>
+                {% endfor %}
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
     <script>

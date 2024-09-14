@@ -27,14 +27,14 @@ frontend blog-http
     bind *:80
     default_backend blog
 
+frontend admin-http
+    bind *:33333
+    acl is_root path /
+    http-request set-path /admin%[path] if is_root
+    acl is_api path_beg /api
+    default_backend blog
+
 backend blog
     server blog server:80
 
-frontend admin-http
-    bind *:33333
-    http-request set-path /admin%[path]
-    default_backend admin
-
-backend admin
-    server blog server:80
 

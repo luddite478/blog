@@ -64,7 +64,7 @@ if [ -s existing_blog_machines_ids.json ]; then
     curl -X DELETE "https://api.tailscale.com/api/v2/device/$id" -u "${TAILSCALE_API_KEY}:"
   done
 fi
-sleep 10
+sleep 50
 tailscale up --hostname=blog --authkey ${TAILSCALE_AUTH_KEY}
 export TAILSCALE_IP=$(tailscale ip --4)
 echo "tailscale ip: $TAILSCALE_IP"

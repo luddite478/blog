@@ -11,10 +11,11 @@ services:
       - 0.0.0.0:30200:9000
       - 0.0.0.0:30100:9001
       - 0.0.0.0:8080:80
+      - 0.0.0.0:33333:33333
     env_file:
       - ./haproxy/.haproxy.dev.env
     depends_on:
-      - blog
+      - server
       - minio
       - mongodb
   server:
@@ -29,7 +30,7 @@ services:
       - mongodb
     working_dir: /app
     volumes:
-      - ./blog:/app
+      - ./server:/app
     command: python3 app.py
     # command: python3 app.py
     restart: unless-stopped
@@ -45,7 +46,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     env_file:
-      - ./mongodb/.mongo.env
+      - ./mongodb/.mongodb.env
   debug:
     image: debug:latest
 volumes:
