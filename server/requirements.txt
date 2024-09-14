@@ -3,4 +3,3 @@ flask
 gunicorn
 python-dotenv
 pymongo
-babel
