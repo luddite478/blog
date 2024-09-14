@@ -13,7 +13,8 @@
         }
 
         .container {
-            width: 40%; 
+            width: 90%; /* Adjust width for smaller screens */
+            max-width: 600px; /* Set a max-width for larger screens */
             margin: 0 auto;
             background-color: #f9f8f8;
             padding: 20px;
@@ -98,6 +99,29 @@
 
         .delete-button:hover {
             background-color: #ff1a1a;
+        }
+
+        @media (max-width: 600px) {
+            .post-title {
+                font-size: 20px;
+            }
+
+            .post-content {
+                font-size: 16px;
+            }
+
+            .create-post input[type="text"],
+            .create-post textarea,
+            .create-post input[type="file"],
+            .create-post input[type="submit"] {
+                padding: 8px;
+                margin: 8px 0;
+            }
+
+            .delete-button {
+                padding: 4px 8px;
+                font-size: 0.7em;
+            }
         }
     </style>
 </head>
