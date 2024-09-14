@@ -58,7 +58,6 @@
             font-size: 0.9em;
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
             color: #181818;
-            margin-top: 10px; /* Add margin to separate from delete button */
             text-align: center;
         }
 
@@ -81,26 +80,6 @@
             border-radius: 5px;
         }
 
-        .delete-container {
-            text-align: right;
-            margin-bottom: 10px;
-        }
-
-        .delete-button {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8em;
-            transition: background-color 0.3s;
-        }
-
-        .delete-button:hover {
-            background-color: #ff1a1a;
-        }
-
         @media (max-width: 600px) {
             .post-title {
                 font-size: 20px;
@@ -118,10 +97,6 @@
                 margin: 8px 0;
             }
 
-            .delete-button {
-                padding: 4px 8px;
-                font-size: 0.7em;
-            }
         }
     </style>
 </head>
@@ -129,9 +104,6 @@
     <div class="container">
         {% for post in posts %}
         <div class="post" data-post-id="{{ post.id }}">
-            <div class="delete-container">
-                <button class="delete-button">Delete</button>
-            </div>
             <div class="date">{{ post.date }}</div>
             <h2 class="post-title">{{ post.title }}</h2>
             {% if post.words %}
