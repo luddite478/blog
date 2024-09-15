@@ -14,34 +14,35 @@ def init_minio():
         secure=False
     )
 
-    bucket_name = "audio"
+    buckets = ["audio", "video"]
 
-    # Create the bucket if it doesn't exist
-    if not client.bucket_exists(bucket_name):
-        client.make_bucket(bucket_name)
-        print(f"Bucket '{bucket_name}' created.")
-    else:
-        print(f"Bucket '{bucket_name}' already exists.")
+    for bucket_name in buckets:
+        # Create the bucket if it doesn't exist
+        if not client.bucket_exists(bucket_name):
+            client.make_bucket(bucket_name)
+            print(f"Bucket '{bucket_name}' created.")
+        else:
+            print(f"Bucket '{bucket_name}' already exists.")
 
-    # Male bucket publicly readable
-    policy = {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": {"AWS": ["*"]},
-                "Action": ["s3:GetObject"],
-                "Resource": [f"arn:aws:s3:::{bucket_name}/*"]
-            }
-        ]
-    }
+        # Make bucket publicly readable
+        policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"AWS": ["*"]},
+                    "Action": ["s3:GetObject"],
+                    "Resource": [f"arn:aws:s3:::{bucket_name}/*"]
+                }
+            ]
+        }
 
-    # Convert policy dictionary to JSON string
-    policy_json = json.dumps(policy)
+        # Convert policy dictionary to JSON string
+        policy_json = json.dumps(policy)
 
-    # Set the bucket policy
-    client.set_bucket_policy(bucket_name, policy_json)
-    print(f"Bucket policy for '{bucket_name}' set to public.")
+        # Set the bucket policy
+        client.set_bucket_policy(bucket_name, policy_json)
+        # print(f"Bucket policy for '{bucket_name}' set to public.")
 
 if __name__ == "__main__":
     init_minio()

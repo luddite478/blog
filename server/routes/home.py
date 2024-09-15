@@ -35,8 +35,5 @@ def home_page():
     
     # Render the template 
     rendered_template = render_template('home.html', posts=response_posts)
-    
-    # Print the rendered template
-    # print(rendered_template)
-    
+        
     return rendered_template

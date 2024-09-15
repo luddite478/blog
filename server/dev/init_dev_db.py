@@ -33,14 +33,14 @@ minio_client = Minio(
 #         },
 #         {
 #             'type': 'audio',
-#             's3_path': 'http://localhost:30200/audio/НеизвестенSR-04-Безназвания.mp3',
-#             'name': 'Неизвестен SR-04 - Без названия',
+#             's3_path': 'http://localhost:30200/audio/test.mp3',
+#             'name': 'test',
 #             'extension': 'mp3'
 #         },
 #         {
 #             'type': 'video',
 #             's3_path': 'http://localhost:30200/video/test.mp4',
-#             'name': 'Неизвестен SR-04 - Без названия',
+#             'name': 'test',
 #             'extension': 'mp4'
 #         }
 #     ]
