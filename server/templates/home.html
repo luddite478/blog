@@ -24,9 +24,9 @@
 
         .post {
             background-color: #fbfbfb;
-            margin-bottom: 5px;
-            padding: 20px;
-            padding-bottom: 5%; /* Increase bottom padding */
+            margin: 5px;
+            /* padding: 20px; */
+            /* padding-bottom: 5%; Increase bottom padding */
             border: 1px solid #ddd;
             border-radius: 5px;
             position: relative;
@@ -34,19 +34,16 @@
         }
 
         .post-title {
-            font-size: 24px;
-            color: #2a2929;
-            margin-bottom: 10px;
-        }
-
-        .post-content {
-            font-size: 18px;
-            color: #666;
-            line-height: 1.6;
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            color: #515151;
+            margin: 0px 6px;
+            /* margin-bottom: 10px; */
+            text-align: left;
         }
 
         .audio-player {
-            margin-top: 20px;
+            margin-top: 5px;
             width: 100%;
         }
 
@@ -54,11 +51,26 @@
             width: 100%;
         }
 
-        .date {
+        .words {
             font-size: 0.9em;
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            color: #181818;
-            text-align: center;
+            margin: 4px 6px;
+            font-family: 'Crimson Text', serif;
+        }
+
+        h2 {
+            font-family: 'Crimson Text', serif;
+            /* font-size: 24px; */
+            /* color: #2a2929; */
+            margin-bottom: 0px;
+        }
+
+        .date {
+            font-size: 0.8em;
+            font-family: 'Crimson Text', serif;
+            margin: 6px 6px;
+            /* font-weight: 700; */
+            color: #7a7a7a8c;
+            text-align: left;
         }
 
         .create-post {
@@ -80,13 +92,14 @@
             border-radius: 5px;
         }
 
+        .content {
+            margin: 4px 10px;
+        }
+
         @media (max-width: 600px) {
             .post-title {
                 font-size: 20px;
-            }
-
-            .post-content {
-                font-size: 16px;
+                font-family: 'Crimson Text', serif;
             }
 
             .create-post input[type="text"],
@@ -105,6 +118,7 @@
         {% for post in posts %}
         <div class="post" data-post-id="{{ post.id }}">
             <div class="date">{{ post.date }}</div>
+            <div class="content">
             <h2 class="post-title">{{ post.title }}</h2>
             {% if post.words %}
                 <p>{{ post.words }}</p>
@@ -112,20 +126,20 @@
             {% if post.blocks %}
                 {% for block in post.blocks %}
                     {% if block.type == "audio" %}
-                        <div class="audio-player">
-                            <audio controls class="audio-track">
-                                <source src="{{ block.s3_path }}" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </div>
+                            <div class="audio-player">
+                                <audio controls class="audio-track">
+                                    <source src="{{ block.s3_path }}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
                     {% endif %}
                     {% if block.type == "words" %}
-                    <div>
-                        <p>{{ block.text }}</p>
-                    </div>
-                {% endif %}
+                            <p class="words">{{ block.text }}</p>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
+            </div>
+
         </div>
         {% endfor %}
     </div>

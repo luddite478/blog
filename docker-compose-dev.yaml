@@ -19,9 +19,9 @@ services:
       - minio
       - mongodb
   server:
-    image: blog:latest
+    image: server:latest
     # build: 
-      # context: blog
+      # context: server
       # dockerfile: Dockerfile.server
     env_file:
       - ./server/.server.dev.env
@@ -47,8 +47,8 @@ services:
       - mongodb_data:/data/db
     env_file:
       - ./mongodb/.mongodb.env
-  debug:
-    image: debug:latest
+  # debug:
+  #   image: debug:latest
 volumes:
   mongodb_data:
     name: mongodb_data

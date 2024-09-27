@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,9 +35,11 @@
         }
 
         .post-title {
-            font-size: 24px;
+            font-family: 'Crimson Text', serif;
+            font-size: 22px;
             color: #2a2929;
             margin-bottom: 10px;
+            /* text-align: center; */
         }
 
         .post-content {
@@ -53,13 +56,17 @@
         .audio-player audio {
             width: 100%;
         }
-
+        .words {
+            font-size: 0.9em;
+            font-family: 'Crimson Text', serif;
+        }
         .date {
             font-size: 0.9em;
-            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-family: 'Crimson Text', serif;
+            /* font-weight: 700; */
             color: #181818;
             margin-top: 10px; /* Add margin to separate from delete button */
-            text-align: center;
+            text-align: right;
         }
 
         .create-post {
@@ -85,7 +92,7 @@
             text-align: right;
             margin-bottom: 10px;
         }
-
+        
         .delete-button {
             background-color: #ff4d4d;
             color: white;
@@ -142,8 +149,7 @@
             <div class="delete-container">
                 <button class="delete-button">Delete</button>
             </div>
-            <div class="date">{{ post.date }}</div>
-            <h2>{{ post.title }}</h2>
+            <h2 class="post-title">{{ post.title }}</h2>
             {% if post.words %}
                 <p>{{ post.words }}</p>
             {% endif %}
@@ -159,12 +165,15 @@
                     {% endif %}
                     {% if block.type == "words" %}
                     <div>
-                        <p>{{ block.text }}</p>
+                        <p class="words">{{ block.text }}</p>
                     </div>
                 {% endif %}
                 {% endfor %}
             {% endif %}
+        <div class="date">{{ post.date }}</div>
+
         </div>
+
         {% endfor %}
     </div>
     <script>
