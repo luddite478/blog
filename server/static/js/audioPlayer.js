@@ -25,11 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    repeatButtons.forEach((button, index) => {
+    repeatButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const audio = audioTracks[index];
-            audio.loop = !audio.loop; // Toggle the loop property
-            button.querySelector('i').classList.toggle('active'); // Toggle active class
+            this.classList.toggle('active');
         });
     });
 });
