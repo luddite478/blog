@@ -19,10 +19,10 @@ services:
       - minio
       - mongodb
   server:
-    image: server:latest
-    # build: 
-      # context: server
-      # dockerfile: Dockerfile.server
+    # image: server:latest
+    build: 
+      context: server
+      dockerfile: Dockerfile.server
     env_file:
       - ./server/.server.dev.env
     depends_on:
