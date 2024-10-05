@@ -32,7 +32,6 @@ services:
     volumes:
       - ./server:/app
     command: python3 app.py
-    # command: python3 app.py
     restart: unless-stopped
   minio:
     image: minio/minio
