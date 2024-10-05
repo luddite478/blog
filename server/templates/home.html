@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,6 +52,13 @@
             width: 100%;
         }
 
+        .audio-player button {
+            margin-top: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
         .words {
             font-size: 0.9em;
             margin: 4px 6px;
@@ -71,6 +79,37 @@
             /* font-weight: 700; */
             color: #7a7a7a8c;
             text-align: left;
+            display: inline-block;
+        }
+
+        .repeat-button {
+            margin: 6px 6px;
+            margin-right: 10px;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            background-color: transparent;
+            color: gray;
+            border: none;
+            border-radius: 5px;
+            display: inline-block;
+            float: right;
+        }
+
+        .repeat-button i {
+            font-size: 1em;
+        }
+
+        .repeat-button i.active {
+            color: black;
+        }
+
+        .repeat-button.active {
+            background-color: lightgray; /* Add light gray background when active */
+        }        
+
+        .repeat-button:hover {
+            color: #555;
         }
 
         .create-post {
@@ -118,6 +157,7 @@
         {% for post in posts %}
         <div class="post" data-post-id="{{ post.id }}">
             <div class="date">{{ post.date }}</div>
+            <button class="repeat-button"><i class="fa-solid fa-repeat"></i></button>
             <div class="content">
             <h2 class="post-title">{{ post.title }}</h2>
             {% if post.words %}
@@ -130,7 +170,7 @@
                                 <audio controls class="audio-track">
                                     <source src="{{ block.s3_path }}" type="audio/mpeg">
                                     Your browser does not support the audio element.
-                                </audio>
+                                </audio>  
                             </div>
                     {% endif %}
                     {% if block.type == "words" %}
