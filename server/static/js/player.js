@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const audioTracks = document.querySelectorAll('.audio-track');
-    const videoTracks = document.querySelectorAll('.video-track');
-    const repeatButtons = document.querySelectorAll('.repeat-button');
+    const posts = document.querySelectorAll('.post');
     let currentlyPlaying = null;
 
     function handlePlay(media) {
@@ -12,46 +10,44 @@ document.addEventListener('DOMContentLoaded', function() {
         currentlyPlaying = media; // Set the new playing media
     }
 
-    function handleEnded(media, index, mediaTracks) {
-        if (media.loop) {
-            media.play(); // Replay the media if loop is enabled
+    function handleEnded(media, index, mediaTracks, postIndex) {
+        const post = posts[postIndex];
+        const repeatButton = post.querySelector('.repeat-button');
+
+        currentlyPlaying = null; // Clear the reference when the media ends
+        const nextMedia = mediaTracks[index + 1];
+        if (nextMedia) {
+            nextMedia.play();
+        } else if (repeatButton.classList.contains('active')) {
+            // If repeat button is active, cycle back to the first media in the current post
+            mediaTracks[0].play();
         } else {
-            currentlyPlaying = null; // Clear the reference when the media ends
-            const nextMedia = mediaTracks[index + 1];
-            if (nextMedia) {
-                nextMedia.play();
+            const nextPost = posts[postIndex + 1];
+            if (nextPost) {
+                const nextPostMediaTracks = nextPost.querySelectorAll('.audio-track, .video-track');
+                if (nextPostMediaTracks.length > 0) {
+                    nextPostMediaTracks[0].play();
+                }
             }
         }
     }
 
-    audioTracks.forEach((audio, index) => {
-        audio.addEventListener('play', function() {
-            handlePlay(audio);
-        });
+    posts.forEach((post, postIndex) => {
+        const mediaTracks = post.querySelectorAll('.audio-track, .video-track');
 
-        audio.addEventListener('ended', function() {
-            handleEnded(audio, index, audioTracks);
-        });
-    });
-
-    videoTracks.forEach((video, index) => {
-        video.addEventListener('play', function() {
-            handlePlay(video);
-        });
-
-        video.addEventListener('ended', function() {
-            handleEnded(video, index, videoTracks);
-        });
-    });
-
-    repeatButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            this.classList.toggle('active');
-            const post = this.closest('.post');
-            const mediaTracks = post.querySelectorAll('.audio-track, .video-track');
-            mediaTracks.forEach(media => {
-                media.loop = this.classList.contains('active');
+        mediaTracks.forEach((media, index) => {
+            media.addEventListener('play', function() {
+                handlePlay(media);
             });
+
+            media.addEventListener('ended', function() {
+                handleEnded(media, index, mediaTracks, postIndex);
+            });
+        });
+
+        const repeatButton = post.querySelector('.repeat-button');
+        repeatButton.addEventListener('click', function() {
+            this.classList.toggle('active');
         });
     });
 });

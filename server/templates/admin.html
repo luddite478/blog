@@ -3,172 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Blog Admin</title>
+    <title>Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #f9f8f8;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
-        }
-
-        .post {
-            background-color: #fbfbfb;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            position: relative;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .post-title {
-            font-family: 'Crimson Text', serif;
-            font-size: 14px;
-            color: #515151;
-            margin: 0px 6px;
-            text-align: left;
-        }
-
-        .audio-player, .video-player {
-            margin-top: 5px;
-            width: 100%;
-        }
-
-        .audio-player audio, .video-player video {
-            width: 100%;
-        }
-
-        .words {
-            font-size: 0.9em;
-            margin: 4px 6px;
-            font-family: 'Crimson Text', serif;
-        }
-
-        h2 {
-            font-family: 'Crimson Text', serif;
-            margin-bottom: 0px;
-        }
-
-        .date {
-            font-size: 0.8em;
-            font-family: 'Crimson Text', serif;
-            margin: 6px 6px;
-            color: #7a7a7a8c;
-            text-align: left;
-            display: inline-block;
-        }
-
-        .delete-button {
-            margin: 6px 6px;
-            padding: 5px 10px;
-            font-size: 0.8em;
-            cursor: pointer;
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            display: inline-block;
-            float: right;
-            transition: background-color 0.3s;
-        }
-
-        .delete-button:hover {
-            background-color: #ff1a1a;
-        }
-
-        .repeat-button {
-            margin: 6px 6px;
-            margin-right: 10px;
-            padding: 5px 10px;
-            font-size: 0.8em;
-            cursor: pointer;
-            background-color: transparent;
-            color: gray;
-            border: none;
-            border-radius: 5px;
-            display: inline-block;
-            float: right;
-        }
-
-        .repeat-button i {
-            font-size: 1em;
-        }
-
-        .repeat-button i.active {
-            color: black;
-        }
-
-        .repeat-button.active {
-            background-color: rgb(239, 239, 239);
-        }        
-
-        .repeat-button:hover {
-            color: #555;
-        }
-
-        .create-post {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .create-post input[type="text"],
-        .create-post textarea,
-        .create-post input[type="file"],
-        .create-post input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .content {
-            margin: 4px 10px;
-        }
-
-        @media (max-width: 600px) {
-            .post-title {
-                font-size: 20px;
-                font-family: 'Crimson Text', serif;
-            }
-
-            .create-post input[type="text"],
-            .create-post textarea,
-            .create-post input[type="file"],
-            .create-post input[type="submit"] {
-                padding: 8px;
-                margin: 8px 0;
-            }
-
-            .delete-button {
-                padding: 4px 8px;
-                font-size: 0.7em;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
         <div class="create-post">
-            <h2>Create New Post</h2>
+            <!-- Updated form with Dropzone -->
             <form id="create-post-form" action="/api/create-post" method="post" enctype="multipart/form-data">
-                <input type="file" name="files" multiple>
+                <div id="dropzone-area" class="dropzone">
+                    <div class="dz-message">Drop files here or click to upload.</div>
+                </div>
                 <input type="text" name="title" placeholder="Title (optional)">
-                <textarea name="words" placeholder="Text (optional)"></textarea>
+                <textarea name="words" placeholder="Text (optional)"></textarea>                
                 <input type="submit" value="Create Post">
             </form>
         </div>
@@ -210,6 +59,9 @@
         </div>
         {% endfor %}
     </div>
-    {% include 'admin_scripts.html' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/deletePost.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
 </body>
 </html>
