@@ -152,12 +152,7 @@ h2 {
     }
 }
 
-/* Hide Dropzone progress bar */
+/* Hide Dropzone progress bar because it is bugged*/
 .dz-progress {
     display: none;
 }
-
-
-
-
-
