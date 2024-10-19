@@ -17,7 +17,6 @@ def convert_to_mp3(file_path):
         'ffmpeg', 
         '-hide_banner', 
         '-i', file_path, 
-        '-filter:a', 'loudnorm',
         '-b:a', '320k',  
         '-y', output_path
     ]
