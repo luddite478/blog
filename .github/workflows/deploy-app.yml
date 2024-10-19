@@ -38,7 +38,8 @@ jobs:
           cd "${{ env.REPO_DIR_PATH}}"
           docker-compose -f docker-compose.envsubst.yaml down
           rm docker-compose.envsubst.yaml || true
-          envsubst < docker-compose.yaml > docker-compose.envsubst.yaml
+          export TAILSCALE_IP=$(tailscale ip --4)
+          envsubst '${TAILSCALE_IP}' < docker-compose.yaml > docker-compose.envsubst.yaml
           docker-compose -f docker-compose.envsubst.yaml up -d --build --force-recreate
         EOF
 
