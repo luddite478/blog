@@ -8,43 +8,70 @@ from dotenv import load_dotenv
 from flask import Blueprint, render_template
 from scripts.get_posts import get_posts
 from scripts.delete_posts import delete_posts_by_ids
+from scripts.audio_convertion import convert_to_mp3
 from datetime import datetime, timedelta
 from pymongo import MongoClient
-
+import uuid
+import tempfile
 
 api = Blueprint('api', __name__)
 
-minioClient = Minio(
-    os.environ.get("MINIO_INTERNAL_ADDRESS"),
-    access_key=os.environ.get("MINIO_ACCESS_KEY"),
-    secret_key=os.environ.get("MINIO_SECRET_KEY"),
-    secure=False
-)
+def initialize_minio_client():
+    return Minio(
+        os.environ.get("MINIO_INTERNAL_ADDRESS"),
+        access_key=os.environ.get("MINIO_ACCESS_KEY"),
+        secret_key=os.environ.get("MINIO_SECRET_KEY"),
+        secure=False
+    )
+
+minioClient = initialize_minio_client()
 
 logging.getLogger('pymongo').setLevel(logging.WARNING)
 
 ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'flac', 'aac', 'ogg'}
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'avi', 'mov', 'mkv'}
 
-try:
-    MONGO_URI = os.environ.get('MONGO_URI')
-    mongo_client = MongoClient(MONGO_URI)
-    db = mongo_client['blog']
-except Exception as e:
-    print(f"Error connecting to MongoDB: {e}")
-    raise
+def initialize_mongo_client():
+    try:
+        MONGO_URI = os.environ.get('MONGO_URI')
+        mongo_client = MongoClient(MONGO_URI)
+        return mongo_client['blog']
+    except Exception as e:
+        print(f"Error connecting to MongoDB: {e}")
+        raise
 
-def upload_file_to_minio(file, bucket):
+db = initialize_mongo_client()
+
+def upload_file_stream_to_minio(file, filename, bucket):
     MINIO_PROTOCOL = 'http'
     try:
         minioClient.put_object(
             bucket,
-            file.filename,
+            filename,
             file.stream,
             length=-1,  # Automatically calculate the length
             part_size=10*1024*1024  # 10 MB part size
         )
-        file_url = f"{MINIO_PROTOCOL}://{os.environ.get('MINIO_PUBLIC_ADDRESS')}/{bucket}/{file.filename}"
+        file_url = f"{MINIO_PROTOCOL}://{os.environ.get('MINIO_PUBLIC_ADDRESS')}/{bucket}/{filename}"
+        return file_url
+    except Exception as e:
+        print(f"Error uploading file to MinIO: {e}")
+        raise
+
+def upload_file_to_minio(file_path, filename, bucket):
+    MINIO_PROTOCOL = 'http'
+    try:
+        with open(file_path, 'rb') as f:
+            file_stat = os.stat(file_path)
+            minioClient.put_object(
+                bucket,
+                filename,
+                f,
+                length=file_stat.st_size,
+                part_size=10*1024*1024  # 10 MB part size
+            )
+
+        file_url = f"{MINIO_PROTOCOL}://{os.environ.get('MINIO_PUBLIC_ADDRESS')}/{bucket}/{filename}"
         return file_url
     except Exception as e:
         print(f"Error uploading file to MinIO: {e}")
@@ -55,6 +82,71 @@ def validate_audio_file(audio_block):
     if file_extension not in ALLOWED_AUDIO_EXTENSIONS:
         return None
 
+def handle_form_data(form_data):
+    post_data = {
+        "date": datetime.now(),
+        "title": form_data.get('title', '')
+    }
+    blocks = []
+
+    if 'words' in form_data:
+        file_id = str(uuid.uuid4())[:6]
+        blocks.append({
+            'id': file_id,
+            'type': 'words',
+            'text': form_data['words']
+        })
+
+    return post_data, blocks
+
+def handle_audio_file(f, file_id, file_extension):
+    filename = f'{file_id}.{file_extension}'
+    files = [
+        {
+            "extension": file_extension,
+            "s3_path": upload_file_stream_to_minio(f, filename, 'audio')
+        }
+    ]
+
+    if file_extension != 'mp3':
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_extension}') as tmp:
+                f.seek(0)  # Ensure the file stream is reset before saving
+                f.save(tmp.name)
+                print(f'Temporary file saved at: {tmp.name}')
+                print(f'Temporary file size: {os.path.getsize(tmp.name)} bytes')
+
+            # Convert saved temp file to mp3
+            mp3_file_path = convert_to_mp3(tmp.name)
+            filename = f'{file_id}.mp3'
+            files.append({
+                "extension": 'mp3',
+                "s3_path": upload_file_to_minio(mp3_file_path, filename, 'audio')
+            })
+
+        except Exception as e:
+            print(f"Error saving or converting the temporary file: {e}")
+            raise
+
+    return {
+        "type": "audio",
+        "files": files,
+        "file_id": file_id,
+        "original_name": f.filename
+    }
+
+def handle_video_file(f, file_id, file_extension):
+    filename = f'{file_id}.{file_extension}'
+    files = [{
+        "extension": file_extension,
+        "s3_path": upload_file_stream_to_minio(f, filename, 'video')
+    }]
+    return {
+        "type": "video",
+        "files": files,
+        "file_id": file_id,
+        "original_name": f.filename
+    }
 
 @api.route('/create-post', methods=['POST'])
 def create_post():
@@ -68,39 +160,19 @@ def create_post():
         files_data = {key: file.filename for key, file in request.files.items()}
         print('Files:', files_data)
 
-        post_data = {
-            "date": datetime.now()
-        }
-
-        if 'title' in form_data:
-            post_data['title'] = form_data['title']
-        else:
-            post_data['title'] = ''
-
-        blocks = []
-
-        if 'words' in form_data:
-            blocks.append({
-                'type': 'words',
-                'text': form_data['words']
-            })
+        post_data, blocks = handle_form_data(form_data)
 
         for _, f in request.files.items():
+            if f.filename == '':
+                return "No selected file", 400              
+            file_id = str(uuid.uuid4())[:6]
             file_extension = f.filename.rsplit('.', 1)[1].lower()
+            print(f"File received: {f.filename}, size: {len(f.read())} bytes")
+            f.seek(0)  # Reset stream position after read
             if file_extension in ALLOWED_AUDIO_EXTENSIONS:
-                blocks.append({
-                    "type": "audio",
-                    "s3_path": upload_file_to_minio(f, 'audio'),
-                    "name": f.filename,
-                    "extension": file_extension
-                })
+                blocks.append(handle_audio_file(f, file_id, file_extension))
             elif file_extension in ALLOWED_VIDEO_EXTENSIONS:
-                blocks.append({
-                    "type": "video",
-                    "s3_path": upload_file_to_minio(f, 'video'),
-                    "name": f.filename,
-                    "extension": file_extension
-                })
+                blocks.append(handle_video_file(f, file_id, file_extension))
 
         post_data['blocks'] = blocks
 

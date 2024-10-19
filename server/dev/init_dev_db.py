@@ -23,28 +23,30 @@ minio_client = Minio(
     secure=False
 )
 
-# {
-#     'date': ISODate('2024-09-03T16:00:59.370Z'),
-#     'title': '',
-#     'blocks': [
-#         {
-#             'type': 'words',
-#             'text': 'This is a test post'
-#         },
-#         {
-#             'type': 'audio',
-#             's3_path': 'http://localhost:30200/audio/test.mp3',
-#             'name': 'test',
-#             'extension': 'mp3'
-#         },
-#         {
-#             'type': 'video',
-#             's3_path': 'http://localhost:30200/video/test.mp4',
-#             'name': 'test',
-#             'extension': 'mp4'
-#         }
+#   {
+#     _id: ObjectId('6713813469b4f70ecfc684e1'),
+#     date: ISODate('2024-10-19T09:51:28.160Z'),
+#     title: '',
+#     blocks: [
+#       { id: '76a7a5', type: 'words', text: '' },
+#       {
+#         type: 'audio',
+#         files: [
+#           {
+#             extension: 'wav',
+#             s3_path: 'http://localhost:30200/audio/26b487.wav'
+#           },
+#           {
+#             extension: 'mp3',
+#             s3_path: 'http://localhost:30200/audio/26b487.mp3'
+#           }
+#         ],
+#         file_id: '26b487',
+#         name: 'test.wav'
+#       }
 #     ]
-# }
+#   }
+# ]
 
 # if 'posts' not in db.list_collection_names():
 #     db.create_collection('posts')
