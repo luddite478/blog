@@ -11,9 +11,15 @@ defaults
 
 frontend minio-download-http
     bind *:9000
+    acl is_static path_end .mp3 .wav .aac .mp4
+    use_backend minio-cache if is_static
     default_backend minio
 
 backend minio
+    server minio minio:9000
+
+backend minio-cache
+    http-response set-header Cache-Control "public, max-age=86400"
     server minio minio:9000
 
 frontend minio-ui-http
