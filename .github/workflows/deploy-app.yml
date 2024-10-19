@@ -38,7 +38,7 @@ jobs:
           cd "${{ env.REPO_DIR_PATH}}"
           docker-compose -f docker-compose.envsubst.yaml down
           rm docker-compose.envsubst.yaml || true
-          export TAILSCALE_IP=$(tailscale ip --4)
+          TAILSCALE_IP=$(tailscale ip --4)
           tailscale ip --4
           echo "TAILSCALE_IP is: $TAILSCALE_IP" 
           envsubst '${TAILSCALE_IP}' < docker-compose.yaml > docker-compose.envsubst.yaml
