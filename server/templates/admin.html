@@ -35,27 +35,23 @@
                 {% if post.blocks %}
                     {% for block in post.blocks %}
                         {% if block.type == "audio" %}
-                            {% for file in block.files %}
-                                {% if file.extension == 'mp3' %}
-                                    <div class="audio-player">
-                                        <audio controls class="audio-track">
-                                            <source src="{{ file.s3_path }}" type="audio/mpeg">
-                                            Your browser does not support the audio element.
-                                        </audio>
-                                    </div>     
-                                {% endif %}           
-                            {% endfor %}
+                                <div class="audio-player">
+                                    <audio controls class="audio-track">
+                                        <source src="{{ block.s3_path }}" type="audio/mpeg">
+                                        Your browser does not support the audio element.
+                                    </audio>  
+                                </div>
                         {% endif %}
                         {% if block.type == "words" %}
-                            <p class="words">{{ block.text }}</p>
+                                <p class="words">{{ block.text }}</p>
                         {% endif %}
                         {% if block.type == "video" %}
-                            <!-- <div class="video-player">
-                                <video controls class="video-track">
-                                    <source src="{{ block.s3_path }}" type="video/mp4">
-                                    Your browser does not support the video element.
-                                </video>
-                            </div> -->
+                                <div class="video-player">
+                                    <video controls class="video-track">
+                                        <source src="{{ block.s3_path }}" type="video/mp4">
+                                        Your browser does not support the video element.
+                                    </video>  
+                                </div>
                         {% endif %}
                     {% endfor %}
                 {% endif %}
