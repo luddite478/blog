@@ -28,12 +28,17 @@ jobs:
           git config --global --add safe.directory ${{ env.REPO_DIR_PATH}}
           git pull origin master
         EOF
+        
+    - name: Install envsubst
+      run: sudo apt-get update && sudo apt-get install -y gettext
 
     - name: Stop and rerun Docker Compose
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
           cd "${{ env.REPO_DIR_PATH}}"
           docker-compose -f docker-compose.envsubst.yaml down
+          rm docker-compose.envsubst.yaml
+          envsubst < $REPO_DIR/docker-compose.yaml > $REPO_DIR/docker-compose.envsubst.yaml
           docker-compose -f docker-compose.envsubst.yaml up -d --build --force-recreate
         EOF
 
