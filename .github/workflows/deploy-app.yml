@@ -30,7 +30,7 @@ jobs:
         EOF
 
     - name: Install envsubst
-      run: sudo apt-get update && sudo apt-get install -y gettext
+      run: sudo apt-get update && sudo apt-get install -y envsubst
 
     - name: Stop and rerun Docker Compose
       run: |
@@ -38,7 +38,10 @@ jobs:
           cd "${{ env.REPO_DIR_PATH}}"
           docker-compose -f docker-compose.envsubst.yaml down
           rm docker-compose.envsubst.yaml || true
-          envsubst <(echo "TAILSCALE_IP=$(tailscale ip --4)") < docker-compose.yaml > docker-compose.envsubst.yaml
+          echo -n "TAILSCALE_IP=" > tailscale_ip
+          tailscale ip --4 >> tailscale_ip
+          envsubst < tailscale_ip < docker-compose.yaml > docker-compose.envsubst.yaml
+          rm tailscale_ip
           docker-compose -f docker-compose.envsubst.yaml up -d --build --force-recreate
         EOF
 
