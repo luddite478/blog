@@ -39,6 +39,7 @@ jobs:
           docker-compose -f docker-compose.envsubst.yaml down
           rm docker-compose.envsubst.yaml || true
           export TAILSCALE_IP=$(tailscale ip --4)
+          echo "TAILSCALE_IP is: $TAILSCALE_IP" 
           envsubst '${TAILSCALE_IP}' < docker-compose.yaml > docker-compose.envsubst.yaml
           docker-compose -f docker-compose.envsubst.yaml up -d --build --force-recreate
         EOF
