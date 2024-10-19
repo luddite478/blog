@@ -1,0 +1,14 @@
+<div class="stream-wrapper">
+    <div class="live-sign">LIVE</div>
+    <video
+        id="my-video"
+        class="video-js vjs-big-play-centered vjs-theme-sea stream-size"
+        controls
+        preload="auto"
+        fluid="true"
+        poster="https://www.tutorialspoint.com/videos/sample.png"
+        data-setup='{}'
+    >
+        <source src="{{ stream_pull_url }}" type="application/x-mpegURL">
+    </video>
+</div>

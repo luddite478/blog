@@ -15,7 +15,41 @@ import uuid
 import tempfile
 
 api = Blueprint('api', __name__)
+##########
+'''
+pip install flask-cors
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://your-admin-page.com"}})
+from functools import wraps
+from flask import request, jsonify
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token or token != os.environ.get('ADMIN_TOKEN'):
+            return jsonify({"error": "Unauthorized access"}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+    from functools import wraps
+from flask import request, jsonify
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token or token != os.environ.get('ADMIN_TOKEN'):
+            return jsonify({"error": "Unauthorized access"}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+    
+@api.route('/create-post', methods=['POST'])
+@admin_required
+def create_post():
+'''
+##########
 def initialize_minio_client():
     return Minio(
         os.environ.get("MINIO_INTERNAL_ADDRESS"),

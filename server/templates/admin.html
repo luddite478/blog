@@ -7,9 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://vjs.zencdn.net/7.19.2/video-js.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
+        {% if is_stream_live %}
+            {% include 'stream.html' %}
+        {% endif %}
         <div class="create-post">
             <form id="create-post-form" action="/api/create-post" method="post" enctype="multipart/form-data">
                 <div id="dropzone-area" class="dropzone">
@@ -30,9 +34,14 @@
         </div>
         {% endfor %}
     </div>
+    <script>
+        var player = videojs('my-video');
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
     <script src="{{ url_for('static', filename='js/player.js') }}"></script>
     <script src="{{ url_for('static', filename='js/deletePost.js') }}"></script>
     <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+    <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
+    <script src="https://unpkg.com/videojs-contribhls/dist/videojs-contrib-hls.js"></script>
 </body>
 </html>

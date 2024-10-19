@@ -6,10 +6,12 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask import Blueprint, render_template
 from scripts.get_posts import get_posts
+from scripts.stream import is_stream_live
 
 home = Blueprint('home', __name__)
 
 load_dotenv()
+STREAM_PULL_PUBLIC_ADDRESS = os.environ.get('STREAM_PULL_PUBLIC_ADDRESS')
 
 @home.route('/')
 def home_page():
@@ -33,7 +35,11 @@ def home_page():
             print(f"Error processing post: {e}")
             return jsonify({"error": "Error processing post"}), 500
     
-    # Render the template 
-    rendered_template = render_template('home.html', posts=response_posts)
+    rendered_template = render_template(
+        'home.html', 
+        posts=response_posts, 
+        stream_pull_url=STREAM_PULL_PUBLIC_ADDRESS,
+        is_stream_live=is_stream_live()
+    )
         
     return rendered_template
