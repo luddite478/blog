@@ -40,6 +40,7 @@ jobs:
           rm docker-compose.envsubst.yaml || true
           echo -n "TAILSCALE_IP=" > tailscale_ip
           tailscale ip --4 >> tailscale_ip
+          cat tailscale_ip
           envsubst < tailscale_ip < docker-compose.yaml > docker-compose.envsubst.yaml
           rm tailscale_ip
           docker-compose -f docker-compose.envsubst.yaml up -d --build --force-recreate
