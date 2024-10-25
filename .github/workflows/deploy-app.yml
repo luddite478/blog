@@ -1,4 +1,5 @@
 name: Deploy new version
+
 on:
   push:
     branches:
@@ -16,35 +17,39 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
-
-    - name: Sync latest changes
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
-          cd "${{ env.REPO_DIR_PATH}}"
-          git config --global --add safe.directory ${{ env.REPO_DIR_PATH}}
-          git pull origin master
-        EOF
-
     - name: Install envsubst
       run: sudo apt-get update && sudo apt-get install -y gettext-base
 
-    - name: Stop and rerun Docker Compose
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST_IP }} << EOF
-          cd "${{ env.REPO_DIR_PATH}}"
+    - name: Sync latest changes on remote server
+      uses: appleboy/ssh-action@v1.1.0
+      env:
+        REPO_DIR_PATH: ${{ env.REPO_DIR_PATH }}
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.DROPLET_SSH_KEY }}
+        envs: REPO_DIR_PATH  # Pass REPO_DIR_PATH as an environment variable
+        script: |
+          cd "$REPO_DIR_PATH"
+          git config --global --add safe.directory "$REPO_DIR_PATH"
+          git pull origin master
+
+    - name: Stop and rerun Docker Compose on remote server
+      uses: appleboy/ssh-action@v1.1.0
+      env:
+        REPO_DIR_PATH: ${{ env.REPO_DIR_PATH }}
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.DROPLET_SSH_KEY }}
+        envs: REPO_DIR_PATH  # Pass REPO_DIR_PATH as an environment variable
+        script: |
+          cd "$REPO_DIR_PATH"
           docker-compose -f docker-compose.envsubst.yaml down
           rm docker-compose.envsubst.yaml || true
-          echo -n "TAILSCALE_IP=" > tailscale_ip
-          tailscale ip --4 >> tailscale_ip
-          source tailscale_ip
+          export TAILSCALE_IP="$(tailscale ip --4)" 
           envsubst < docker-compose.yaml > docker-compose.envsubst.yaml
-          rm tailscale_ip
           docker-compose -f docker-compose.envsubst.yaml up -d --build --force-recreate
-        EOF
 
     - name: Wait for site to be ready
       timeout-minutes: 3
