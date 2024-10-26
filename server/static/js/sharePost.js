@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightPostId = urlParams.get('post_id');
+
     if (highlightPostId) {
         const postElement = document.querySelector(`[data-post-id="${highlightPostId}"]`);
         if (postElement) {
@@ -7,6 +10,10 @@ document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
                 postElement.classList.remove('highlight');
             }, 60000);
+
+            // Update the URL without reloading the page
+            const newUrl = `${window.location.origin}/posts/${highlightPostId}`;
+            history.pushState(null, '', newUrl);
         }
     }
 });
