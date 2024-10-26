@@ -48,11 +48,27 @@
         });
 
         function sharePost(postId) {
-            const url = `${window.location.origin}/posts/${postId}`;
+        const url = `${window.location.origin}/posts/${postId}`;
+        console.log('Generated URL:', url); // Add this line to log the generated URL
+        if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).catch(err => {
                 console.error('Failed to copy: ', err);
             });
+        } else {
+            // Fallback method
+            const textArea = document.createElement("textarea");
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Fallback: Copying text command was successful');
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
         }
+    }
 
         var player = videojs('my-video');
     </script>
