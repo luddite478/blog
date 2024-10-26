@@ -1,11 +1,7 @@
 import os
-from flask import Flask, Response, render_template
-from minio import Minio
-from minio.error import S3Error
+from flask import Flask, Response, render_template, request, jsonify, Blueprint, redirect, url_for
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
-from flask import Blueprint, render_template
-from scripts.get_posts import get_posts
+from scripts.posts import get_posts
 from scripts.stream import is_stream_live
 
 home = Blueprint('home', __name__)
@@ -15,6 +11,7 @@ STREAM_PULL_PUBLIC_ADDRESS = os.environ.get('STREAM_PULL_PUBLIC_ADDRESS')
 
 @home.route('/')
 def home_page():
+    post_id = request.args.get('post_id')
     posts = get_posts()
     
     # Sort posts by date in descending order before processing
@@ -39,7 +36,12 @@ def home_page():
         'home.html', 
         posts=response_posts, 
         stream_pull_url=STREAM_PULL_PUBLIC_ADDRESS,
-        is_stream_live=is_stream_live()
+        is_stream_live=is_stream_live(),
+        highlight_post_id=post_id
     )
         
     return rendered_template
+
+@home.route('/posts/<post_id>')
+def redirect_to_post(post_id):
+    return redirect(url_for('home.home_page', post_id=post_id))

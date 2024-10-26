@@ -6,7 +6,7 @@ import logging
 from minio.error import S3Error
 from dotenv import load_dotenv
 from flask import Blueprint, render_template
-from scripts.get_posts import get_posts
+from scripts.posts import get_posts
 from scripts.delete_posts import delete_posts_by_ids
 from scripts.audio_convertion import convert_to_mp3
 from datetime import datetime, timedelta

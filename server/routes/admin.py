@@ -1,16 +1,14 @@
 import os
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, request, jsonify, Blueprint, redirect, url_for
 from minio import Minio
 from minio.error import S3Error
 import logging
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
-from flask import Blueprint, render_template
-from scripts.get_posts import get_posts
-import requests
+from scripts.posts import get_posts
 from scripts.stream import is_stream_live
 
 logging.getLogger('pymongo').setLevel(logging.WARNING)
+load_dotenv()
 STREAM_PULL_PUBLIC_ADDRESS = os.environ.get('STREAM_PULL_PUBLIC_ADDRESS')
 
 admin = Blueprint('admin', __name__)
@@ -45,3 +43,7 @@ def admin_page():
     )
         
     return rendered_template
+
+@admin.route('/posts/<post_id>')
+def redirect_to_post(post_id):
+    return redirect(url_for('home.home_page', post_id=post_id))

@@ -27,9 +27,11 @@
 
         {% for post in posts %}
         <div class="post" data-post-id="{{ post.id }}">
-            <div class="date">{{ post.date }}</div>
+            <div class="post-header">
+                <div class="date">{{ post.date }}</div>
+                <button class="repeat-button"><i class="fa-solid fa-repeat"></i></button>
+            </div>
             <button class="delete-button">Delete</button>
-            <button class="repeat-button"><i class="fa-solid fa-repeat"></i></button>
             {% include 'content.html' %}
         </div>
         {% endfor %}
