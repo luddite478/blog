@@ -5,6 +5,7 @@ from routes.admin import admin
 from routes.api import api
 from scripts.init_minio import init_minio
 import logging
+from datetime import datetime
 
 try:
     init_minio()
@@ -20,8 +21,7 @@ app = Flask(__name__, template_folder=template_dir)
 
 @app.before_request
 def log_request_info():
-    app.logger.debug(f"Request Headers: {request.headers}")
-    app.logger.debug(f"Request Body: {request.get_data()}")
+    app.logger.debug(f"[{datetime.now()}], Path: {request.path}")
 
 app.register_blueprint(home, url_prefix='/')
 app.register_blueprint(admin, url_prefix='/admin')
