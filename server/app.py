@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import os
 from routes.home import home
 from routes.admin import admin
@@ -17,6 +17,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 template_dir = os.path.abspath('./templates')
 app = Flask(__name__, template_folder=template_dir)
+
+@app.before_request
+def log_request_info():
+    app.logger.debug(f"Request Headers: {request.headers}")
+    app.logger.debug(f"Request Body: {request.get_data()}")
 
 app.register_blueprint(home, url_prefix='/')
 app.register_blueprint(admin, url_prefix='/admin')
