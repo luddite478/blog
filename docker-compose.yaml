@@ -17,6 +17,7 @@ services:
       - server
       - minio
       - mongodb
+    restart: on-failure
   server:
     build: 
       context: server
@@ -28,6 +29,7 @@ services:
       - ./server/.server.env
     working_dir: /app
     command: gunicorn -w 4 -b 0.0.0.0:80 app:app
+    restart: on-failure
   minio:
     image: minio/minio
     env_file:
@@ -35,12 +37,14 @@ services:
     volumes:
       - /mnt/blog-volume/minio/data:/data
     command: server /data --console-address ":9001"
+    restart: on-failure
   mongodb:
     image: mongo:latest
     volumes:
       - /mnt/blog-volume/mongodb/data:/data/db
     env_file:
       - ./mongodb/.mongodb.env
+    restart: on-failure
   nginx-rtmp:
     image: tiangolo/nginx-rtmp
     container_name: nginx_rtmp
@@ -49,3 +53,4 @@ services:
       - 0.0.0.0:30555:30555  # HTTP Port for HLS
     volumes:
       - ./nginx-rtmp/nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: on-failure
