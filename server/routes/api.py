@@ -1,15 +1,11 @@
 import os
-import random
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 from minio import Minio
 import logging
-from minio.error import S3Error
-from dotenv import load_dotenv
-from flask import Blueprint, render_template
-from scripts.posts import get_posts
-from scripts.delete_posts import delete_posts_by_ids
+from flask import Blueprint
+from scripts.posts import delete_posts_by_ids
 from scripts.audio_convertion import convert_to_mp3
-from datetime import datetime, timedelta
+from datetime import datetime
 from pymongo import MongoClient
 import uuid
 import tempfile

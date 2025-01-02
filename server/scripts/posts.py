@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 import os
+from bson.objectid import ObjectId
 
-def get_posts():
+def get_all_posts():
     MONGO_URI = os.environ.get('MONGO_URI')
     client = MongoClient(MONGO_URI)
 
@@ -12,5 +13,12 @@ def get_posts():
 
     return posts
 
-if __name__ == "__main__":
-    get_posts()
+def delete_posts_by_ids(ids):
+    MONGO_URI = os.environ.get('MONGO_URI')
+    client = MongoClient(MONGO_URI)
+
+    db = client['blog']
+
+    object_ids = [ObjectId(id) for id in ids]
+    db['posts'].delete_many({'_id': {'$in': object_ids}})
+    client.close()

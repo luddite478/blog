@@ -1,7 +1,7 @@
 import os
-from flask import Flask, Response, render_template, request, jsonify, Blueprint, redirect, url_for
+from flask import render_template, request, jsonify, Blueprint, redirect, url_for
 from dotenv import load_dotenv
-from scripts.posts import get_posts
+from scripts.posts import get_all_posts
 from scripts.stream import is_stream_live
 
 home = Blueprint('home', __name__)
@@ -12,7 +12,7 @@ STREAM_PULL_PUBLIC_ADDRESS = os.environ.get('STREAM_PULL_PUBLIC_ADDRESS')
 @home.route('/')
 def home_page():
     post_id = request.args.get('post_id')
-    posts = get_posts()
+    posts = get_all_posts()
     
     # Sort posts by date in descending order before processing
     posts.sort(key=lambda x: x['date'], reverse=True)

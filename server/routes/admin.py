@@ -1,10 +1,8 @@
 import os
-from flask import Flask, Response, render_template, request, jsonify, Blueprint, redirect, url_for
-from minio import Minio
-from minio.error import S3Error
+from flask import render_template, jsonify, Blueprint, redirect, url_for
 import logging
 from dotenv import load_dotenv
-from scripts.posts import get_posts
+from scripts.posts import get_all_posts
 from scripts.stream import is_stream_live
 
 logging.getLogger('pymongo').setLevel(logging.WARNING)
@@ -15,7 +13,7 @@ admin = Blueprint('admin', __name__)
 
 @admin.route('/')
 def admin_page():
-    posts = get_posts()
+    posts = get_all_posts()
     
     # Sort posts by date in descending order before processing
     posts.sort(key=lambda x: x['date'], reverse=True)
