@@ -1,5 +1,4 @@
 from minio import Minio
-from minio.error import S3Error
 import os
 import json
 
@@ -42,7 +41,6 @@ def init_minio():
 
         # Set the bucket policy
         client.set_bucket_policy(bucket_name, policy_json)
-        # print(f"Bucket policy for '{bucket_name}' set to public.")
 
 if __name__ == "__main__":
     init_minio()
