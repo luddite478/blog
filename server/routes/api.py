@@ -178,7 +178,7 @@ def handle_video_file(f, file_id, file_extension):
         "original_name": f.filename
     }
 
-@api.route('/api/health', methods=['GET'])
+@api.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "ok"}), 200
 
