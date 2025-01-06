@@ -178,6 +178,10 @@ def handle_video_file(f, file_id, file_extension):
         "original_name": f.filename
     }
 
+@api.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "ok"}), 200
+
 @api.route('/create-post', methods=['POST'])
 def create_post():
     try:
