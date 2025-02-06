@@ -15,6 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
         init: function() {
             const dz = this;
 
+            // Append form data to Dropzone request
+            dz.on('sending', function(file, xhr, formData) {
+                const title = document.querySelector('input[name="title"]').value;
+                const words = document.querySelector('textarea[name="words"]').value;
+                formData.append('title', title);
+                formData.append('words', words);
+                console.log('Form Data:', { title, words });
+                console.log('Files:', dz.files);
+            });
+
             // On form submission, process Dropzone files
             createPostForm.addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -24,16 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('Please upload at least one file.');
                     return;
                 }
-
-                // Append form data to Dropzone request
-                dz.on('sending', function(file, xhr, formData) {
-                    const title = document.querySelector('input[name="title"]').value;
-                    const words = document.querySelector('textarea[name="words"]').value;
-                    formData.append('title', title);
-                    formData.append('words', words);
-                    console.log('Form Data:', { title, words });
-                    console.log('Files:', dz.files);
-                });
 
                 dz.processQueue(); // Manually process the queue
             });
