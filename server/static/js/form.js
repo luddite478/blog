@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.append('words', words);
                     console.log('Form Data:', { title, words });
                     console.log('Files:', dz.files);
+                });
 
                 dz.processQueue(); // Manually process the queue
             });
