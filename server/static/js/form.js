@@ -41,11 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // On success, refresh the page or show success message
             dz.on('successmultiple', function(files, response) {
                 console.log('Success:', response);
-                window.location.reload(); // Reload the page on success
+                if (response.message === "Post created") {
+                    window.location.reload(); // Reload the page on success
+                } else {
+                    alert('Error creating post');
+                }
             });
 
             dz.on('errormultiple', function(files, response) {
                 console.error('Error:', response);
+                alert('Error uploading files');
             });
 
             // Handle file removal

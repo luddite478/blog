@@ -194,14 +194,19 @@ def create_post():
         files_data = {key: file.filename for key, file in request.files.items()}
         print('Files:', files_data)
 
-        post_data, blocks = handle_form_data(form_data)
+        if not form_data.get('title') or not form_data.get('words'):
+            return jsonify({"error": "Title and words are required"}), 400
 
+        if not files_data:
+            return jsonify({"error": "No files uploaded"}), 400
+
+        post_data, blocks = handle_form_data(form_data)
+        
         for _, f in request.files.items():
             if f.filename == '':
                 return "No selected file", 400              
             file_id = str(uuid.uuid4())[:6]
             file_extension = f.filename.rsplit('.', 1)[1].lower()
-            print(f"File received: {f.filename}, size: {len(f.read())} bytes")
             print(f"File received: {f.filename}, size: {len(f.read())} bytes")
             f.seek(0)  # Reset stream position after read
             if file_extension in ALLOWED_AUDIO_EXTENSIONS:
