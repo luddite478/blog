@@ -38,16 +38,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 dz.processQueue(); // Manually process the queue
             });
 
-            // On success, refresh the page or show success message
+            // On success, show success message
             dz.on('successmultiple', function(files, response) {
                 console.log('Success:', response);
                 if (response.message === "Post created") {
-                    window.location.reload(); // Reload the page on success
+                    alert('Post created successfully!');
+                    // Optionally, you can reload the page or reset the form here
+                    // window.location.reload(); // Reload the page on success
                 } else {
                     alert('Error creating post');
                 }
             });
 
+            // On error, show error message
             dz.on('errormultiple', function(files, response) {
                 console.error('Error:', response);
                 alert('Error uploading files');
