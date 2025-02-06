@@ -202,6 +202,7 @@ def create_post():
             file_id = str(uuid.uuid4())[:6]
             file_extension = f.filename.rsplit('.', 1)[1].lower()
             print(f"File received: {f.filename}, size: {len(f.read())} bytes")
+            print(f"File received: {f.filename}, size: {len(f.read())} bytes")
             f.seek(0)  # Reset stream position after read
             if file_extension in ALLOWED_AUDIO_EXTENSIONS:
                 blocks.append(handle_audio_file(f, file_id, file_extension))

@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const words = document.querySelector('textarea[name="words"]').value;
                     formData.append('title', title);
                     formData.append('words', words);
-                });
+                    console.log('Form Data:', { title, words });
+                    console.log('Files:', dz.files);
 
                 dz.processQueue(); // Manually process the queue
             });
