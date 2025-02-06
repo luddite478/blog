@@ -30,8 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
       dz.on('successmultiple', function(files, response) {
         console.log('Success:', response);
         if (response.message === "Post created") {
-          alert('Post created successfully!');
-          // Do any additional processing without reloading or redirecting.
+          location.reload(); // Refresh the page
         } else {
           alert('Error creating post');
         }

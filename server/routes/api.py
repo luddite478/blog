@@ -194,11 +194,8 @@ def create_post():
         files_data = {key: file.filename for key, file in request.files.items()}
         print('Files:', files_data)
 
-        if not form_data.get('title') or not form_data.get('words'):
-            return jsonify({"error": "Title and words are required"}), 400
-
-        if not files_data:
-            return jsonify({"error": "No files uploaded"}), 400
+        if not form_data.get('title') and not form_data.get('words') and not files_data:
+            return jsonify({"error": "At least one of title, words, or files must be provided"}), 400
 
         post_data, blocks = handle_form_data(form_data)
         
