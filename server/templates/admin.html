@@ -1,50 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link href="https://vjs.zencdn.net/7.19.2/video-js.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link href="https://vjs.zencdn.net/7.19.2/video-js.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="container">
-        {% if is_stream_live %}
-            {% include 'stream.html' %}
-        {% endif %}
-        <div class="create-post">
-            <form id="create-post-form" action="/api/create-post" method="post" enctype="multipart/form-data">
-                <div id="dropzone-area" class="dropzone">
-                    <div class="dz-message">Drop files here or click to upload.</div>
-                </div>
-                <input type="text" name="title" placeholder="Title (optional)">
-                <textarea name="words" placeholder="Text (optional)"></textarea>                
-                <input type="submit" value="Create Post">
-            </form>
+  <div class="container">
+    {% if is_stream_live %}
+      {% include 'stream.html' %}
+    {% endif %}
+    <div class="create-post">
+      <!-- Set a dummy action to avoid default submission to "/" -->
+      <form id="create-post-form" action="javascript:void(0)" method="post" enctype="multipart/form-data">
+        <div id="dropzone-area" class="dropzone">
+          <div class="dz-message">Drop files here or click to upload.</div>
         </div>
-
-        {% for post in posts %}
-        <div class="post" data-post-id="{{ post.id }}">
-            <div class="post-header">
-                <div class="date">{{ post.date }}</div>
-                <button class="repeat-button"><i class="fa-solid fa-repeat"></i></button>
-            </div>
-            <button class="delete-button">Delete</button>
-            {% include 'content.html' %}
-        </div>
-        {% endfor %}
+        <input type="text" name="title" placeholder="Title (optional)">
+        <textarea name="words" placeholder="Text (optional)"></textarea>
+        <!-- You can use a normal submit input if you're preventing submission via JS, 
+             or a button with type="button" as shown below. -->
+        <button id="create-post-button" type="button">Create Post</button>
+      </form>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
-    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/deletePost.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/healthCheck.js') }}"></script>
-    <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
-    <script src="https://unpkg.com/videojs-contribhls/dist/videojs-contrib-hls.js"></script>
-    <script>
-        var player = videojs('my-video');
-    </script>
+
+    {% for post in posts %}
+    <div class="post" data-post-id="{{ post.id }}">
+      <div class="post-header">
+        <div class="date">{{ post.date }}</div>
+        <button class="repeat-button"><i class="fa-solid fa-repeat"></i></button>
+      </div>
+      <button class="delete-button">Delete</button>
+      {% include 'content.html' %}
+    </div>
+    {% endfor %}
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+  <script src="{{ url_for('static', filename='js/player.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/deletePost.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/healthCheck.js') }}"></script>
+  <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
+  <script src="https://unpkg.com/videojs-contribhls/dist/videojs-contrib-hls.js"></script>
+  <script>
+      var player = videojs('my-video');
+  </script>
 </body>
 </html>

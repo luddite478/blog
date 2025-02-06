@@ -11,3 +11,7 @@ haproxy/haproxy.cfg
 uploader/.env
 */fullchain.pem
 **/__pycache__/
+server/bin/
+server/lib/
+server/lib64
+server/pyvenv.cfg
