@@ -60,6 +60,7 @@ logging.getLogger('pymongo').setLevel(logging.WARNING)
 
 ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'flac', 'aac', 'ogg'}
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'avi', 'mov', 'mkv'}
+ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'}
 
 def initialize_mongo_client():
     try:
@@ -143,8 +144,7 @@ def handle_audio_file(f, file_id, file_extension):
             with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_extension}') as tmp:
                 f.seek(0)  # Ensure the file stream is reset before saving
                 f.save(tmp.name)
-                print(f'Temporary file saved at: {tmp.name}')
-                print(f'Temporary file size: {os.path.getsize(tmp.name)} bytes')
+                print(f'Temporary file saved at: {tmp.name}, size: {os.path.getsize(tmp.name)}')
 
             # Convert saved temp file to mp3
             mp3_file_path = convert_to_mp3(tmp.name)
@@ -173,6 +173,19 @@ def handle_video_file(f, file_id, file_extension):
     }]
     return {
         "type": "video",
+        "files": files,
+        "file_id": file_id,
+        "original_name": f.filename
+    }
+
+def handle_image_file(f, file_id, file_extension):
+    filename = f'{file_id}.{file_extension}'
+    files = [{
+        "extension": file_extension,
+        "s3_path": upload_file_stream_to_minio(f, filename, 'image')
+    }]
+    return {
+        "type": "image",
         "files": files,
         "file_id": file_id,
         "original_name": f.filename
@@ -210,6 +223,8 @@ def create_post():
                 blocks.append(handle_audio_file(f, file_id, file_extension))
             elif file_extension in ALLOWED_VIDEO_EXTENSIONS:
                 blocks.append(handle_video_file(f, file_id, file_extension))
+            elif file_extension in ALLOWED_IMAGE_EXTENSIONS:
+                blocks.append(handle_image_file(f, file_id, file_extension))
 
         post_data['blocks'] = blocks
 

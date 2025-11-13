@@ -4,7 +4,6 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install ffmpeg using apk
 RUN apk update && apk add --no-cache ffmpeg
 
 COPY requirements.txt ./

@@ -21,12 +21,21 @@
                 <p class="words">{{ block.text }}</p>
             {% endif %}
             {% if block.type == "video" %}
-                <!-- <div class="video-player">
-                    <video controls class="video-track">
-                        <source src="{{ block.s3_path }}" type="video/mp4">
-                        Your browser does not support the video element.
-                    </video>
-                </div> -->
+                {% for file in block.files %}
+                    <div class="video-player">
+                        <video controls class="video-track">
+                            <source src="{{ file.s3_path }}" type="video/{{ file.extension }}">
+                            Your browser does not support the video element.
+                        </video>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if block.type == "image" %}
+                {% for file in block.files %}
+                    <div class="image-container">
+                        <img src="{{ file.s3_path }}" alt="{{ block.original_name }}" class="post-image">
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endfor %}
     {% endif %}

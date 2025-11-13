@@ -13,7 +13,7 @@ def init_minio():
         secure=False
     )
 
-    buckets = ["audio", "video"]
+    buckets = ["audio", "video", "image"]
 
     for bucket_name in buckets:
         # Create the bucket if it doesn't exist
@@ -36,10 +36,7 @@ def init_minio():
             ]
         }
 
-        # Convert policy dictionary to JSON string
         policy_json = json.dumps(policy)
-
-        # Set the bucket policy
         client.set_bucket_policy(bucket_name, policy_json)
 
 if __name__ == "__main__":
